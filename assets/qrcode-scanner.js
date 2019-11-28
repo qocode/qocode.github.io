@@ -13,12 +13,11 @@ class QRCodeScanner extends HTMLElement {
         <button class="start-button">start</button>
         <button class="reset-button">reset</button>
       </p>
-      <video class="video" width="300" height="200" style="border: solid 1px #ccc;"></video>
+      <video class="video" width="200" height="300" style="border: solid 1px #ccc;"></video>
       <div class="logs"></div>
     `
     this.codeReader = new ZXing.BrowserMultiFormatReader()
     this.video = this.querySelector('.video')
-    this.usedDevice = null
     this.querySelector('.start-button').onclick = () => this.start().catch(console.error)
     this.querySelector('.reset-button').onclick = () => this.codeReader.reset()
     this.logs = this.querySelector('.logs')
@@ -42,12 +41,9 @@ class QRCodeScanner extends HTMLElement {
       return
     }
 
-    this.log(JSON.stringify([this.usedDevice] = devices))
-
     this.codeReader.reset()
 
-    this.codeReader.decodeFromVideoDevice(
-      this.usedDevice.deviceId, this.video,
+    this.codeReader.decodeFromVideoDevice(this.video,
       (result, err) => {
         if (result) {
           this.log(result.text)
