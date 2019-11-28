@@ -1,0 +1,11 @@
+exclude:
+  - .vscode
+  - .eslintrc
+  - .gitignore
+  - node_modules
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - README.md
+  - package.json
+  - package-lock.json
