@@ -43,7 +43,7 @@ class QRCodeScanner extends HTMLElement {
 
     this.codeReader.reset()
 
-    this.codeReader.decodeFromVideoDevice(this.video,
+    this.codeReader.decodeFromVideoDevice(null, this.video,
       (result, err) => {
         if (result) {
           this.log(result.text)
