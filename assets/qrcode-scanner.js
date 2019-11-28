@@ -42,10 +42,7 @@ class QRCodeScanner extends HTMLElement {
       return
     }
 
-    [this.usedDevice] = devices
-    for (const device in devices) {
-      this.log(JSON.stringify(device))
-    }
+    this.log(JSON.stringify([this.usedDevice] = devices))
 
     this.codeReader.reset()
 
