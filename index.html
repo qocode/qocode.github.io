@@ -1,17 +1,20 @@
-<!DOCTYPE html>
-<html lang="ru">
+---
+layout: home
+title: QO-Code
+---
+<div class="page-layout">
+  <div class="page-header">
+    <page-logo class="page-logo">
+      <img class="page-logo__png" src="assets/png/favicon.png">
+    </page-logo>
+    <div class="page-name">
+      <span>QO-Code</span>
+    </div>
+    <total-price class="total-price">100&#8381;</total-price>
+  </div>
+  <orders-list class="page-middle">page-middle</orders-list>
+  <div class="page-footer">page-footer</div>
+</div>
+{% include overlay-actions.html %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="icon" type="image/png" href="/assets/favicon.png" />
-  <script type="module" src="/assets/qrcode-scanner.js"></script>
-  <title>QRCode Scanner</title>
-</head>
-
-<body>
-  <qrcode-scanner></qrcode-scanner>
-</body>
-
-</html>
+<!-- <qrcode-scanner></qrcode-scanner> -->
