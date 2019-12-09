@@ -1,20 +1,20 @@
 ---
-layout: home
+permalink: /
 title: QO-Code
+modules:
+- /assets/js/qrcode-scanner.js
 ---
 <div class="page-layout">
   <div class="page-header">
-    <page-logo class="page-logo">
-      <img class="page-logo__png" src="assets/png/favicon.png">
-    </page-logo>
-    <div class="page-name">
-      <span>QO-Code</span>
-    </div>
+    {% include page-logo.html %} {% include page-name.html %}
     <total-price class="total-price">100&#8381;</total-price>
   </div>
   <orders-list class="page-middle">page-middle</orders-list>
   <div class="page-footer">page-footer</div>
 </div>
-{% include overlay-actions.html %}
+<div class="overlay-layout">
+  {% include scan-button.html %}
+</div>
+
 
 <!-- <qrcode-scanner></qrcode-scanner> -->
