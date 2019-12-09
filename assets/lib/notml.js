@@ -124,6 +124,11 @@ class OOMElement extends OOMAbstract {
     if (OOMElement.rotateArgs(attributes, childs)) {
       [attributes, childs] = [childs, attributes]
     }
+    if (tagName[0] === tagName[0].toUpperCase()) {
+      tagName = tagName
+        .replace((/^[A-Z]/), str => str.toLowerCase())
+        .replace((/[A-Z]/g), str => `-${str.toLowerCase()}`)
+    }
     this.element = document.createElement(tagName)
     this.setAttributes(attributes)
     this.append(childs)
