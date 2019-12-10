@@ -1,4 +1,4 @@
-import { oom, NotMLElement } from '../lib/notml.js'
+import { oom, NotMLElement } from './lib/notml.js'
 
 const { screen, document, HTMLElement } = window
 

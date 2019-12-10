@@ -1,6 +1,6 @@
 import 'https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.js'
 import 'https://cdn.jsdelivr.net/npm/pako@1.0.10/dist/pako.min.js'
-import { oom, NotMLElement } from '../lib/notml.js'
+import { oom, NotMLElement } from './lib/notml.js.js'
 
 const { QRCode, pako } = window
 const basis = '0123456789' +
