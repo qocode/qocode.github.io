@@ -17,6 +17,9 @@ const oomHandler = Object.create(null, {
 const oomOrigin = Object.create(null, {
   [Symbol.hasInstance]: {
     value: instance => instance[isOOMInstance] || false
+  },
+  onReady: {
+    value: Symbol('oom.onReady')
   }
 })
 const oom = new Proxy(() => { }, Object.create(null, {
@@ -132,6 +135,9 @@ class OOMElement extends OOMAbstract {
     this.element = document.createElement(tagName)
     this.setAttributes(attributes)
     this.append(childs)
+    if (attributes && oomOrigin.onReady in attributes) {
+      attributes[oomOrigin.onReady](this.element)
+    }
   }
 
   /**

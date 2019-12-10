@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 html, body {
   font-family: 'Ubuntu', sans-serif;
   height: 100%;
@@ -54,7 +58,7 @@ body {
 
 .page-middle {
   flex-grow: 1;
-  padding: 0 1em;
+  padding: .5em 1em;
 }
 
 .page-footer {
@@ -182,4 +186,17 @@ menu-active-orders-list {
 .scan-button:active {
   color: red;
   border: 2px solid;
+}
+
+.qrcode-generator__label-text {
+  width: 100%;
+  font-size: .8em;
+  line-height: 1.4em;
+  color: #777;
+}
+
+.qrcode-generator__label-input {
+  width: 100%;
+  line-height: 1.4em;
+  padding: 0 .2em;
 }

@@ -7,7 +7,19 @@ const { QRCode } = window
 class QRCodeGenerator extends NotMLElement {
 
   content = oom
-    .canvas()
+    .form({ [oom.onReady]: element => (this.form = element) }, oom
+      .label(oom
+        .div('URL сервиса:', { class: 'qrcode-generator__label-text' })
+        .input({
+          name: 'api-url',
+          type: 'text',
+          class: 'qrcode-generator__label-input',
+          placeholder: 'URL сервиса обрабтки заказов',
+          oninput: () => this.updateQR()
+        }))
+    )
+    .div(oom.canvas({ [oom.onReady]: element => (this.canvas = element) }))
+
 
   /** Первичная загрузка */
   constructor() {
@@ -20,25 +32,32 @@ class QRCodeGenerator extends NotMLElement {
   /**
    * Обновление QR кода
    */
-  updateQR() {
-    // const form = new FormData(this.form)
-    // const url = new URL('/', location.origin)
-    // const type = form.get('qrcode::type')
+  updateQR(e) {
+    const formData = new FormData(this.form)
+    const url = new URL('/', location.origin)
+    const qrData = {
+      u: formData.get('api-url')
+    }
 
-    // if (type) {
-    //   url.searchParams.append(type[0], 1)
-    // }
+    for (const [name, value] of Object.entries(qrData)) {
+      if (value && typeof value === 'string') {
+        url.searchParams.append(name, value)
+      }
+    }
 
-    QRCode.toCanvas(this.canvas, 'qocode.github.io',
+    console.log(url.href)
+
+
+    QRCode.toCanvas(this.canvas, url.href,
       {
-        errorCorrectionLevel: 'low',
-        version: 2,
-        margin: 9,
-        scale: 1,
-        color: {
-          dark: '#000f',
-          light: '#fff0'
-        }
+        // errorCorrectionLevel: 'low',
+        // version: 2,
+        // margin: 9,
+        // scale: 1,
+        // color: {
+        //   dark: '#000f',
+        //   light: '#fff0'
+        // }
       }
       , error => {
         if (error) {
