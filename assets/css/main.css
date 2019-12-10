@@ -118,7 +118,7 @@ main-menu[opened] .main-menu__background {
 }
 
 main-menu .main-menu__content {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   right: 7em;
@@ -199,4 +199,13 @@ menu-active-orders-list {
   width: 100%;
   line-height: 1.4em;
   padding: 0 .2em;
+}
+
+.qrcode-generator__qr-block {
+  display: flex;
+  justify-content: center;
+}
+
+.qrcode-generator__qr-canvas {
+  max-width: 100%;
 }
