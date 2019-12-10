@@ -140,7 +140,11 @@ class OOMElement extends OOMAbstract {
    */
   setAttributes(attributes = {}) {
     for (const [attrName, attrValue] of Object.entries(attributes)) {
-      this.element.setAttribute(attrName, attrValue)
+      if (typeof attrValue === 'function') {
+        this.element[attrName] = attrValue
+      } else {
+        this.element.setAttribute(attrName, attrValue)
+      }
     }
   }
 
