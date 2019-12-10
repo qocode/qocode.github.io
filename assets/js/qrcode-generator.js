@@ -3,7 +3,27 @@ import 'https://cdn.jsdelivr.net/npm/pako@1.0.10/dist/pako.min.js'
 import { oom, NotMLElement } from '../lib/notml.js'
 
 const { QRCode, pako } = window
+const basis = '0123456789' +
+  'abcdefghijklmnopqrstuvwxyz' +
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+  '.-'
 
+window.decimalToX64 = decimalToX64
+
+/**
+ * @param {number} value
+ */
+function decimalToX64(value) {
+  let result = ''
+
+  while (value >= 64) {
+    result = basis[value % 64] + result
+    value = value / 64 ^ 0
+  }
+  result = basis[value] + result
+
+  return result
+}
 
 class QRCodeGenerator extends NotMLElement {
 
@@ -83,17 +103,22 @@ class QRCodeGenerator extends NotMLElement {
 
     const dataRaw = pako.deflateRaw(JSON.stringify(srcData))
     const data = dataRaw.reduce((data, item) => {
-      item = item.toString(16)
-      item = ('0' + item).slice(-2)
+      return (data += ('0' + item.toString(16)).slice(-2))
+    }, '')
+    const dataParts = data.match(/.{1,3}/g)
+    const dataLast = dataParts[dataParts.length - 1]
 
-      return (data += item)
+    dataParts[dataParts.length - 1] = ('00' + dataLast.toString(16)).slice(-3)
+
+    const data2 = dataParts.reduce((data, item) => {
+      return (data += ('0' + decimalToX64(parseInt(item, 16))).slice(-2))
     }, '')
 
     console.timeEnd('deflateRaw')
 
     const url = new URL('/', location.origin)
 
-    url.searchParams.append('d', data)
+    url.searchParams.append('d', data2)
 
     const qrData = url.host + url.pathname + url.search
 
