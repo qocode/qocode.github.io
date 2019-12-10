@@ -1,6 +1,6 @@
 import 'https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.js'
 import 'https://cdn.jsdelivr.net/npm/pako@1.0.10/dist/pako.min.js'
-import { oom, NotMLElement } from './lib/notml.js.js'
+import { oom, NotMLElement } from './lib/notml.js'
 
 const { QRCode, pako } = window
 const basis = '0123456789' +
@@ -16,11 +16,10 @@ window.decimalToX64 = decimalToX64
 function decimalToX64(value) {
   let result = ''
 
-  while (value >= 64) {
+  do {
     result = basis[value % 64] + result
     value = value / 64 ^ 0
-  }
-  result = basis[value] + result
+  } while (value > 0)
 
   return result
 }
