@@ -1,6 +1,6 @@
-import 'https://cdn.jsdelivr.net/npm/@zxing/library@0.15.2/umd/index.min.js'
+import { ZXing } from './external.js'
 
-const { document, ZXing } = window
+const { document } = window
 
 
 class QRCodeScanner extends HTMLElement {
