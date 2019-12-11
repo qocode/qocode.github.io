@@ -203,7 +203,9 @@ menu-active-orders-list {
 
 .qrcode-generator__qr-block {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2em;
 }
 
 .qrcode-generator__qr-canvas {
