@@ -214,7 +214,7 @@ class QOSource {
    * @returns {string}
    */
   stringify(options) {
-    const { url, host, short, json, encode, deflate } = Object.assign({}, this.options, options)
+    const { url, host, short, json, deflate } = Object.assign({}, this.options, options)
     const resultURL = new URL('', url || location.origin)
     const urlData = this.constructor.parseURL(resultURL)
     let result = this.data
@@ -237,9 +237,6 @@ class QOSource {
 
     if (json) {
       result = JSON.stringify(result)
-      if (encode) {
-        result = encodeURIComponent(result)
-      }
     } else {
       for (const [key, value] of Object.entries(result)) {
         resultURL.searchParams.set(key, value)

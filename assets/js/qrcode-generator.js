@@ -61,12 +61,6 @@ class QRCodeGenerator extends NotMLElement {
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas3 = element)
       })
-      .span({ [oom.onReady]: element => (this.span4 = element) })
-      .span({ [oom.onReady]: element => (this.span4_ = element) })
-      .canvas({
-        class: 'qrcode-generator__qr-canvas',
-        [oom.onReady]: element => (this.canvas4 = element)
-      })
     )
 
 
@@ -125,9 +119,6 @@ class QRCodeGenerator extends NotMLElement {
     this.span3.textContent = qosource.stringify({ short: 1, json: 1 })
     this.span3_.textContent = JSON.stringify(new QOSource(this.span3.textContent))
     QRCode.toCanvas(this.canvas3, this.span3.textContent, this.options)
-    this.span4.textContent = qosource.stringify({ short: 1, json: 1, encode: 1 })
-    this.span4_.textContent = JSON.stringify(new QOSource(this.span4.textContent))
-    QRCode.toCanvas(this.canvas4, this.span4.textContent, this.options)
   }
 
 }
