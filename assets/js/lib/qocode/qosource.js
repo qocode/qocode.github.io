@@ -18,6 +18,7 @@ const shortKeys = Object.keys(keysMap)
 const allKeys = keys.concat(shortKeys)
 const shortKeysMap = Object.entries(keysMap)
   .reduce((short, [key, value]) => (short[value] = key) && short, {})
+const dataKey = 'd'
 
 
 /**
@@ -110,7 +111,13 @@ class QOSource {
    * @returns {object}
    */
   static parseURLSearchParams(data) {
-    return this.parseEntries(data.entries())
+    const dataValue = data.get(dataKey)
+
+    if (dataValue) {
+      return Object.assign(this.parseString(dataValue), this.parseEntries(data.entries()))
+    } else {
+      return this.parseEntries(data.entries())
+    }
   }
 
   /**
@@ -119,6 +126,32 @@ class QOSource {
    */
   static parseURL(data) {
     return this.parseURLSearchParams(data.searchParams)
+  }
+
+  /**
+   * @param {string} data
+   * @returns {object}
+   */
+  static parseString(data) {
+    let result
+
+    try {
+      result = new URL(data)
+    } catch (error) {
+      try {
+        result = JSON.parse(data)
+      } catch (error) {
+        if (data.indexOf('=') > -1) {
+          return this.parseURLSearchParams(new URLSearchParams(data))
+        } else {
+          return this.parseString(this.inflate(data))
+        }
+      }
+
+      return this.parseEntries(Object.entries(result))
+    }
+
+    return this.parseURL(result)
   }
 
   /**
@@ -164,7 +197,16 @@ class QOSource {
     }
     if (data instanceof FormData) {
       this.data = this.constructor.parseFormData(data)
+    } else if (typeof data === 'string') {
+      this.data = this.constructor.parseString(data)
     }
+  }
+
+  /**
+   * @returns {object}
+   */
+  toJSON() {
+    return this.data
   }
 
   /**

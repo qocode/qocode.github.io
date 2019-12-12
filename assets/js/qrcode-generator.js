@@ -7,13 +7,6 @@ class QRCodeGenerator extends NotMLElement {
 
   urlParams = new URL(location.href).searchParams
 
-  urlSearchNames = [
-    'u', // API URL
-    's', // Название продавца (Seller)
-    'n', // Название товара (Product name)
-    'p' // Цена товара (Price)
-  ]
-
   content = oom
     .form({ [oom.onReady]: element => (this.form = element) }, oom
       .label(oom
@@ -39,31 +32,37 @@ class QRCodeGenerator extends NotMLElement {
     )
     .div({ class: 'qrcode-generator__qr-block' }, oom
       .span({ [oom.onReady]: element => (this.span = element) })
+      .span({ [oom.onReady]: element => (this.span_ = element) })
       .canvas({
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas = element)
       })
       .span({ [oom.onReady]: element => (this.span0 = element) })
+      .span({ [oom.onReady]: element => (this.span0_ = element) })
       .canvas({
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas0 = element)
       })
       .span({ [oom.onReady]: element => (this.span1 = element) })
+      .span({ [oom.onReady]: element => (this.span1_ = element) })
       .canvas({
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas1 = element)
       })
       .span({ [oom.onReady]: element => (this.span2 = element) })
+      .span({ [oom.onReady]: element => (this.span2_ = element) })
       .canvas({
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas2 = element)
       })
       .span({ [oom.onReady]: element => (this.span3 = element) })
+      .span({ [oom.onReady]: element => (this.span3_ = element) })
       .canvas({
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas3 = element)
       })
       .span({ [oom.onReady]: element => (this.span4 = element) })
+      .span({ [oom.onReady]: element => (this.span4_ = element) })
       .canvas({
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas4 = element)
@@ -97,6 +96,7 @@ class QRCodeGenerator extends NotMLElement {
     const data = qosource.stringify({ short: 1, json: 1, deflate: 1 })
 
     this.span.textContent = data
+    this.span_.textContent = JSON.stringify(new QOSource(this.span.textContent))
     QRCode.toCanvas(this.canvas, data, this.options, error => {
       if (error) {
         console.error(error)
@@ -114,14 +114,19 @@ class QRCodeGenerator extends NotMLElement {
       }
     })
     this.span0.textContent = qosource.stringify()
+    this.span0_.textContent = JSON.stringify(new QOSource(this.span0.textContent))
     QRCode.toCanvas(this.canvas0, this.span0.textContent, this.options)
     this.span1.textContent = qosource.stringify({ short: 1 })
+    this.span1_.textContent = JSON.stringify(new QOSource(this.span1.textContent))
     QRCode.toCanvas(this.canvas1, this.span1.textContent, this.options)
     this.span2.textContent = qosource.stringify({ short: 1, deflate: 1 })
+    this.span2_.textContent = JSON.stringify(new QOSource(this.span2.textContent))
     QRCode.toCanvas(this.canvas2, this.span2.textContent, this.options)
     this.span3.textContent = qosource.stringify({ short: 1, json: 1 })
+    this.span3_.textContent = JSON.stringify(new QOSource(this.span3.textContent))
     QRCode.toCanvas(this.canvas3, this.span3.textContent, this.options)
     this.span4.textContent = qosource.stringify({ short: 1, json: 1, encode: 1 })
+    this.span4_.textContent = JSON.stringify(new QOSource(this.span4.textContent))
     QRCode.toCanvas(this.canvas4, this.span4.textContent, this.options)
   }
 
