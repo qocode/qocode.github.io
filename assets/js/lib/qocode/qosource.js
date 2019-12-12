@@ -191,7 +191,10 @@ class QOSource {
    * @param {object} options
    */
   constructor(data, options = {}) {
-    this.options = options
+    this.options = Object.assign({
+      url: location.origin,
+      short: true
+    }, options)
     if (data instanceof HTMLElement && data.tagName === 'FORM') {
       data = new FormData(data)
     }
@@ -215,7 +218,7 @@ class QOSource {
    */
   stringify(options) {
     const { url, host, short, json, deflate } = Object.assign({}, this.options, options)
-    const resultURL = new URL('', url || location.origin)
+    const resultURL = new URL('', url)
     const urlData = this.constructor.parseURL(resultURL)
     let result = this.data
 

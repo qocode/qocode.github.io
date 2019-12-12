@@ -107,7 +107,7 @@ class QRCodeGenerator extends NotMLElement {
         this.updateQR()
       }
     })
-    this.span0.textContent = qosource.stringify()
+    this.span0.textContent = qosource.stringify({ short: 0 })
     this.span0_.textContent = JSON.stringify(new QOSource(this.span0.textContent))
     QRCode.toCanvas(this.canvas0, this.span0.textContent, this.options)
     this.span1.textContent = qosource.stringify({ short: 1 })
@@ -116,7 +116,7 @@ class QRCodeGenerator extends NotMLElement {
     this.span2.textContent = qosource.stringify({ short: 1, deflate: 1 })
     this.span2_.textContent = JSON.stringify(new QOSource(this.span2.textContent))
     QRCode.toCanvas(this.canvas2, this.span2.textContent, this.options)
-    this.span3.textContent = qosource.stringify({ short: 1, json: 1 })
+    this.span3.textContent = qosource.stringify({ short: 0, json: 1 })
     this.span3_.textContent = JSON.stringify(new QOSource(this.span3.textContent))
     QRCode.toCanvas(this.canvas3, this.span3.textContent, this.options)
   }
