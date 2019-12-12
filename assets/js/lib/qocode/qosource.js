@@ -99,6 +99,22 @@ class QOSource {
   }
 
   /**
+   * @param {Array<string, string>} data
+   * @returns {object}
+   */
+  static parseUserEntries(data) {
+    const result = {}
+
+    for (const [key, value] of data) {
+      if (!allKeys.includes(key) && value) {
+        result[key] = value
+      }
+    }
+
+    return result
+  }
+
+  /**
    * @param {FormData} data
    * @returns {object}
    */
@@ -121,11 +137,27 @@ class QOSource {
   }
 
   /**
+   * @param {URLSearchParams} data
+   * @returns {object}
+   */
+  static parseUserURLSearchParams(data) {
+    return this.parseUserEntries(data.entries())
+  }
+
+  /**
    * @param {URL} data
    * @returns {object}
    */
   static parseURL(data) {
     return this.parseURLSearchParams(data.searchParams)
+  }
+
+  /**
+   * @param {URL} data
+   * @returns {object}
+   */
+  static parseUserURL(data) {
+    return this.parseUserURLSearchParams(data.searchParams)
   }
 
   /**
@@ -220,11 +252,14 @@ class QOSource {
     const { url, host, short, json, deflate } = Object.assign({}, this.options, options)
     const resultURL = new URL('', url)
     const urlData = this.constructor.parseURL(resultURL)
-    let result = this.data
+    const urlUserData = this.constructor.parseUserURL(resultURL)
+    const data = Object.assign(urlData, this.data, urlUserData)
+    let result = data
 
     if (host) {
       resultURL.hash = host
     }
+    resultURL.search = ''
 
     if (short) {
       result = {}

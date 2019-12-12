@@ -86,7 +86,7 @@ class QRCodeGenerator extends NotMLElement {
    * Обновление QR кода
    */
   updateQR(e) {
-    const qosource = new QOSource(this.form, { url: 'https://qocode.github.io/' })
+    const qosource = new QOSource(this.form, { url: 'https://qocode.github.io/?x=1&a=qocode.github.io' })
     const data = qosource.stringify({ short: 1, json: 1, deflate: 1 })
 
     this.span.textContent = data
