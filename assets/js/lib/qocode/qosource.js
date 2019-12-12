@@ -236,7 +236,7 @@ class QOSource {
     }
 
     if (json) {
-      result = JSON.stringify(result)
+      result = Object.keys(result).length ? JSON.stringify(result) : ''
     } else {
       for (const [key, value] of Object.entries(result)) {
         resultURL.searchParams.set(key, value)
@@ -249,7 +249,7 @@ class QOSource {
       result = this.constructor.deflate(result)
     }
 
-    if (json || deflate) {
+    if (result && (json || deflate)) {
       result = `${resultURL.origin}${resultURL.pathname}?d=${result}`
     } else {
       result = resultURL.href
