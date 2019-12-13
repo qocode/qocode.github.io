@@ -37,30 +37,6 @@ class QRCodeGenerator extends NotMLElement {
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas = element)
       })
-      .span({ [oom.onReady]: element => (this.span0 = element) })
-      .span({ [oom.onReady]: element => (this.span0_ = element) })
-      .canvas({
-        class: 'qrcode-generator__qr-canvas',
-        [oom.onReady]: element => (this.canvas0 = element)
-      })
-      .span({ [oom.onReady]: element => (this.span1 = element) })
-      .span({ [oom.onReady]: element => (this.span1_ = element) })
-      .canvas({
-        class: 'qrcode-generator__qr-canvas',
-        [oom.onReady]: element => (this.canvas1 = element)
-      })
-      .span({ [oom.onReady]: element => (this.span2 = element) })
-      .span({ [oom.onReady]: element => (this.span2_ = element) })
-      .canvas({
-        class: 'qrcode-generator__qr-canvas',
-        [oom.onReady]: element => (this.canvas2 = element)
-      })
-      .span({ [oom.onReady]: element => (this.span3 = element) })
-      .span({ [oom.onReady]: element => (this.span3_ = element) })
-      .canvas({
-        class: 'qrcode-generator__qr-canvas',
-        [oom.onReady]: element => (this.canvas3 = element)
-      })
     )
 
 
@@ -86,8 +62,8 @@ class QRCodeGenerator extends NotMLElement {
    * Обновление QR кода
    */
   updateQR(e) {
-    const qosource = new QOSource(this.form, { url: 'https://qocode.github.io/?x=1&a=qocode.github.io' })
-    const data = qosource.stringify({ short: 1, json: 1, deflate: 1 })
+    const qosource = new QOSource(this.form, { url: 'https://qocode.github.io' })
+    const data = qosource.stringify()
 
     this.span.textContent = data
     this.span_.textContent = JSON.stringify(new QOSource(this.span.textContent))
@@ -107,18 +83,6 @@ class QRCodeGenerator extends NotMLElement {
         this.updateQR()
       }
     })
-    this.span0.textContent = qosource.stringify({ short: 0 })
-    this.span0_.textContent = JSON.stringify(new QOSource(this.span0.textContent))
-    QRCode.toCanvas(this.canvas0, this.span0.textContent, this.options)
-    this.span1.textContent = qosource.stringify({ short: 1 })
-    this.span1_.textContent = JSON.stringify(new QOSource(this.span1.textContent))
-    QRCode.toCanvas(this.canvas1, this.span1.textContent, this.options)
-    this.span2.textContent = qosource.stringify({ short: 1, deflate: 1 })
-    this.span2_.textContent = JSON.stringify(new QOSource(this.span2.textContent))
-    QRCode.toCanvas(this.canvas2, this.span2.textContent, this.options)
-    this.span3.textContent = qosource.stringify({ short: 0, json: 1 })
-    this.span3_.textContent = JSON.stringify(new QOSource(this.span3.textContent))
-    QRCode.toCanvas(this.canvas3, this.span3.textContent, this.options)
   }
 
 }

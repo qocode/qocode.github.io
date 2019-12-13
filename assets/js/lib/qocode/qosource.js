@@ -7,15 +7,14 @@ const x64alphabet = '0123456789' +
   '-_'
 const partDelimiter = '.'
 const x64len = x64alphabet.length
+const x64RE = new RegExp(`^[${x64alphabet + partDelimiter}]+$`)
 const keysMap = {
   a: 'api', // URL сервиса для работы с заказами (Api url)
   s: 'seller', // Название продавца (Seller name)
   n: 'name', // Название товара (product Name)
   p: 'price' // Цена товара (product Price)
 }
-const keys = Object.values(keysMap)
-const shortKeys = Object.keys(keysMap)
-const allKeys = keys.concat(shortKeys)
+const allKeys = Object.values(keysMap).concat(Object.keys(keysMap))
 const shortKeysMap = Object.entries(keysMap)
   .reduce((short, [key, value]) => (short[value] = key) && short, {})
 const dataKey = 'd'
@@ -90,24 +89,12 @@ class QOSource {
     const result = {}
 
     for (const [key, value] of data) {
-      if (allKeys.includes(key) && value) {
-        result[keysMap[key] || key] = value
-      }
-    }
-
-    return result
-  }
-
-  /**
-   * @param {Array<string, string>} data
-   * @returns {object}
-   */
-  static parseUserEntries(data) {
-    const result = {}
-
-    for (const [key, value] of data) {
-      if (!allKeys.includes(key) && value) {
-        result[key] = value
+      if (value) {
+        if (allKeys.includes(key)) {
+          result[keysMap[key] || key] = value
+        } else {
+          result[key] = value
+        }
       }
     }
 
@@ -130,18 +117,12 @@ class QOSource {
     const dataValue = data.get(dataKey)
 
     if (dataValue) {
+      data.delete(dataKey)
+
       return Object.assign(this.parseString(dataValue), this.parseEntries(data.entries()))
     } else {
       return this.parseEntries(data.entries())
     }
-  }
-
-  /**
-   * @param {URLSearchParams} data
-   * @returns {object}
-   */
-  static parseUserURLSearchParams(data) {
-    return this.parseUserEntries(data.entries())
   }
 
   /**
@@ -150,14 +131,6 @@ class QOSource {
    */
   static parseURL(data) {
     return this.parseURLSearchParams(data.searchParams)
-  }
-
-  /**
-   * @param {URL} data
-   * @returns {object}
-   */
-  static parseUserURL(data) {
-    return this.parseUserURLSearchParams(data.searchParams)
   }
 
   /**
@@ -249,31 +222,32 @@ class QOSource {
    * @returns {string}
    */
   stringify(options) {
-    const { url, host, short, json, deflate } = Object.assign({}, this.options, options)
-    const resultURL = new URL('', url)
+    options = Object.assign({}, this.options, options)
+
+    const resultURL = new URL('', options.url)
     const urlData = this.constructor.parseURL(resultURL)
-    const urlUserData = this.constructor.parseUserURL(resultURL)
-    const data = Object.assign(urlData, this.data, urlUserData)
+    const data = Object.assign(urlData, this.data)
     let result = data
 
-    if (host) {
-      resultURL.hash = host
+    if ('host' in options) {
+      resultURL.hash = options.host
     }
     resultURL.search = ''
 
-    if (short) {
+    if (options.short) {
       result = {}
-      for (const [key, value] of Object.entries(urlData)) {
-        result[shortKeysMap[key]] = value
+      for (const [key, value] of Object.entries(data)) {
+        result[shortKeysMap[key] || key] = value
       }
-      for (const [key, value] of Object.entries(this.data)) {
-        result[shortKeysMap[key]] = value
-      }
-    } else {
-      result = Object.assign({}, urlData, result)
     }
 
-    if (json) {
+    if ((!('json' in options) || !('deflate' in options)) &&
+      !x64RE.test(Object.entries(result).map(item => item.join('')).join(''))) {
+      if (!('json' in options)) options.json = true
+      if (!('deflate' in options)) options.deflate = true
+    }
+
+    if (options.json) {
       result = Object.keys(result).length ? JSON.stringify(result) : ''
     } else {
       for (const [key, value] of Object.entries(result)) {
@@ -283,11 +257,11 @@ class QOSource {
     }
 
 
-    if (result && deflate) {
+    if (result && options.deflate) {
       result = this.constructor.deflate(result)
     }
 
-    if (result && (json || deflate)) {
+    if (result && (options.json || options.deflate)) {
       result = `${resultURL.origin}${resultURL.pathname}?d=${result}`
     } else {
       result = resultURL.href
