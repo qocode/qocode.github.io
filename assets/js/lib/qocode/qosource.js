@@ -7,7 +7,7 @@ const x64alphabet = '0123456789' +
   '-_'
 const partDelimiter = '.'
 const x64len = x64alphabet.length
-const x64RE = new RegExp(`^[${x64alphabet + partDelimiter}]+$`)
+const x64RE = new RegExp(`^[${x64alphabet.replace('-', '\\-') + partDelimiter}]+$`)
 const keysMap = {
   a: 'api', // URL сервиса для работы с заказами (Api url)
   s: 'seller', // Название продавца (Seller name)
