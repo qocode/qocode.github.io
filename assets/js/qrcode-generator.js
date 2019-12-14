@@ -20,7 +20,7 @@ class QRCodeGenerator extends NotMLElement {
           oninput: () => this.updateQR()
         }))
       .label(oom
-        .div('Название продавца:', { class: 'qrcode-generator__label-text' })
+        .div('Продавец:', { class: 'qrcode-generator__label-text' })
         .input({
           name: 'seller',
           value: this.urlParams.get('s') || '',
@@ -29,13 +29,37 @@ class QRCodeGenerator extends NotMLElement {
           placeholder: 'Название продавца',
           oninput: () => this.updateQR()
         }))
+      .label(oom
+        .div('Товар:', { class: 'qrcode-generator__label-text' })
+        .input({
+          name: 'name',
+          value: this.urlParams.get('s') || '',
+          type: 'text',
+          class: 'qrcode-generator__label-input',
+          placeholder: 'Название товара',
+          oninput: () => this.updateQR()
+        }))
+      .label(oom
+        .div('Стоимость:', { class: 'qrcode-generator__label-text' })
+        .input({
+          name: 'price',
+          value: this.urlParams.get('s') || '',
+          type: 'text',
+          class: 'qrcode-generator__label-input',
+          placeholder: 'Стоимость товара',
+          oninput: () => this.updateQR()
+        }))
     )
     .div({ class: 'qrcode-generator__qr-block' }, oom
-      .span({ [oom.onReady]: element => (this.span = element) })
-      .span({ [oom.onReady]: element => (this.span_ = element) })
       .canvas({
         class: 'qrcode-generator__qr-canvas',
         [oom.onReady]: element => (this.canvas = element)
+      })
+      .input({
+        class: 'qrcode-generator__label-input',
+        readonly: true,
+        onclick: 'this.select()',
+        [oom.onReady]: element => (this.urlText = element)
       })
     )
 
@@ -65,8 +89,7 @@ class QRCodeGenerator extends NotMLElement {
     const qosource = new QOSource(this.form, { url: 'https://qocode.github.io' })
     const data = qosource.stringify()
 
-    this.span.textContent = data
-    this.span_.textContent = JSON.stringify(new QOSource(this.span.textContent))
+    this.urlText.value = data
     QRCode.toCanvas(this.canvas, data, this.options, error => {
       if (error) {
         console.error(error)
