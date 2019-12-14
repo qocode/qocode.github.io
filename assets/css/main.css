@@ -201,7 +201,9 @@ qrcode-scanner {
 }
 
 qrcode-scanner[opened] {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: fixed;
   left: 0;
   top: 0;
