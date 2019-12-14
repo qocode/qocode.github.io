@@ -171,7 +171,7 @@ menu-active-orders-list {
   flex-grow: 1;
 }
 
-.scan-button {
+scan-button {
   position: fixed;
   z-index: 1;
   font-size: 2em;
@@ -191,9 +191,34 @@ menu-active-orders-list {
   -webkit-tap-highlight-color: #0000;
 }
 
-.scan-button:active {
+scan-button:active {
   color: red;
   border: 2px solid;
+}
+
+qrcode-scanner {
+  display: none;
+}
+
+qrcode-scanner[opened] {
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 2;
+}
+
+.qrcode-scanner-video {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.qrcode-scanner-logs {
+  position: fixed;
+  bottom: 4em;
 }
 
 .qrcode-generator__label-text {

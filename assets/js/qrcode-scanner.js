@@ -1,26 +1,27 @@
 import { ZXing } from './external.js'
+import { oom, NotMLElement } from './lib/notml.js'
 
 const { document } = window
 
 
-class QRCodeScanner extends HTMLElement {
+class QRCodeScanner extends NotMLElement {
+
+  content = oom
+    .video({
+      class: 'qrcode-scanner-video',
+      [oom.onReady]: element => (this.video = element)
+    })
+    .div({
+      class: 'qrcode-scanner-logs',
+      [oom.onReady]: element => (this.logs = element)
+    })
+    .ScanButton('-')
 
   /** Первичная загрузка */
   constructor() {
     super()
-    this.innerHTML = `
-      <p>
-        <button class="start-button">start</button>
-        <button class="reset-button">reset</button>
-      </p>
-      <video class="video" width="200" height="300" style="border: solid 1px #ccc;"></video>
-      <div class="logs"></div>
-    `
+    this.inProcess = false
     this.codeReader = new ZXing.BrowserMultiFormatReader()
-    this.video = this.querySelector('.video')
-    this.querySelector('.start-button').onclick = () => this.start().catch(console.error)
-    this.querySelector('.reset-button').onclick = () => this.codeReader.reset()
-    this.logs = this.querySelector('.logs')
   }
 
   /** Временные логи сканирования */
@@ -33,6 +34,10 @@ class QRCodeScanner extends HTMLElement {
 
   /** Запуск сканирования */
   async start() {
+    this.reset()
+    this.inProcess = true
+    this.setAttribute('opened', '')
+
     const devices = await this.codeReader.listVideoInputDevices()
 
     if (!devices.length) {
@@ -41,18 +46,33 @@ class QRCodeScanner extends HTMLElement {
       return
     }
 
-    this.codeReader.reset()
-
     this.codeReader.decodeFromVideoDevice(null, this.video,
       (result, err) => {
         if (result) {
           this.log(result.text)
         }
         if (err && !(err instanceof ZXing.NotFoundException)) {
-          console.error(err)
+          this.log(err)
         }
       }
     )
+  }
+
+  /** Остановка сканирования */
+  reset() {
+    this.codeReader.reset()
+    this.removeAttribute('opened')
+    this.logs.innerHTML = ''
+    this.inProcess = false
+  }
+
+  /** Включение и выключение сканера */
+  toggleScan() {
+    if (this.inProcess) {
+      this.reset()
+    } else {
+      this.start().catch(err => this.log(err))
+    }
   }
 
 }
