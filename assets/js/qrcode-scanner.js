@@ -1,8 +1,6 @@
 import { ZXing } from './external.js'
 import { oom, NotMLElement } from './lib/notml.js'
 
-const { document } = window
-
 
 class QRCodeScanner extends NotMLElement {
 
@@ -12,9 +10,10 @@ class QRCodeScanner extends NotMLElement {
       [oom.onReady]: element => (this.video = element)
     })
     .div({
-      class: 'qrcode-scanner-logs',
-      [oom.onReady]: element => (this.logs = element)
-    })
+      class: 'qrcode-scanner-result',
+      [oom.onReady]: element => (this.result = element)
+    }, 'Наведите камеру на код')
+    .AddButton('+')
     .ScanButton('-')
 
   /** Первичная загрузка */
@@ -24,12 +23,14 @@ class QRCodeScanner extends NotMLElement {
     this.codeReader = new ZXing.BrowserMultiFormatReader()
   }
 
-  /** Временные логи сканирования */
-  log(msg) {
-    const row = document.createElement('div')
+  /** Логи ошибки сканирования */
+  error(msg) {
+    this.result.innerHTML = `${new Date().toLocaleString()}: ${msg}`
+  }
 
-    row.innerHTML = `${new Date().toLocaleString()}: ${msg}`
-    this.logs.prepend(row)
+  /** Установка итогов сканирования */
+  setResult(msg) {
+    this.result.innerHTML = msg
   }
 
   /** Запуск сканирования */
@@ -41,7 +42,7 @@ class QRCodeScanner extends NotMLElement {
     const devices = await this.codeReader.listVideoInputDevices()
 
     if (!devices.length) {
-      this.log('ERROR: video input devices not found')
+      this.error('ERROR: video input devices not found')
 
       return
     }
@@ -49,10 +50,10 @@ class QRCodeScanner extends NotMLElement {
     this.codeReader.decodeFromVideoDevice(null, this.video,
       (result, err) => {
         if (result) {
-          this.log(result.text)
+          this.setResult(result.text)
         }
         if (err && !(err instanceof ZXing.NotFoundException)) {
-          this.log(err)
+          this.error(err)
         }
       }
     )
@@ -62,7 +63,7 @@ class QRCodeScanner extends NotMLElement {
   reset() {
     this.codeReader.reset()
     this.removeAttribute('opened')
-    this.logs.innerHTML = ''
+    this.setResult('Наведите камеру на код')
     this.inProcess = false
   }
 
@@ -71,7 +72,7 @@ class QRCodeScanner extends NotMLElement {
     if (this.inProcess) {
       this.reset()
     } else {
-      this.start().catch(err => this.log(err))
+      this.start().catch(err => this.error(err))
     }
   }
 

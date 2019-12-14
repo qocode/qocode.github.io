@@ -196,6 +196,31 @@ scan-button:active {
   border: 2px solid;
 }
 
+add-button {
+  position: fixed;
+  z-index: 1;
+  font-size: 2em;
+  left: .3em;
+  bottom: .3em;
+  height: 1.4em;
+  width: 1.4em;
+  color: #999;
+  border: 1px solid #bbb;
+  border-radius: .4em;
+  text-align: center;
+  line-height: 1.2em;
+  background: #fff;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: #0000;
+}
+
+add-button:active {
+  color: red;
+  border: 2px solid;
+}
+
 qrcode-scanner {
   display: none;
 }
@@ -218,9 +243,15 @@ qrcode-scanner[opened] {
   max-width: 100%;
 }
 
-.qrcode-scanner-logs {
+.qrcode-scanner-result {
   position: fixed;
   bottom: 4em;
+  right: 0;
+  left: 0;
+  padding: 0.4em;
+  background-color: white;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
 }
 
 .qrcode-generator__label-text {
