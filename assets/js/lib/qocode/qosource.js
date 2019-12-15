@@ -192,6 +192,20 @@ class QOSource {
   }
 
   /**
+   * @param {object} data
+   */
+  static validation(data) {
+    let valid = false
+
+    for (const name in shortKeysMap) {
+      valid = name in data
+      if (valid) break
+    }
+
+    return valid
+  }
+
+  /**
    * @param {any} data
    * @param {object} options
    */
@@ -200,13 +214,21 @@ class QOSource {
       url: location.origin,
       short: true
     }, options)
-    if (data instanceof HTMLElement && data.tagName === 'FORM') {
-      data = new FormData(data)
-    }
-    if (data instanceof FormData) {
-      this.data = this.constructor.parseFormData(data)
-    } else if (typeof data === 'string') {
-      this.data = this.constructor.parseString(data)
+    try {
+      if (data instanceof HTMLElement && data.tagName === 'FORM') {
+        data = new FormData(data)
+      }
+      if (data instanceof FormData) {
+        this.data = this.constructor.parseFormData(data)
+      } else if (typeof data === 'string') {
+        this.data = this.constructor.parseString(data)
+      }
+      this.seller = 'api' in this.data
+      this.product = 'name' in this.data
+      this.valid = this.constructor.validation(this.data)
+    } catch (error) {
+      console.error(error)
+      this.valid = false
     }
   }
 

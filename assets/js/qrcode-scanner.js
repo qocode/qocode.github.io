@@ -1,5 +1,6 @@
 import { ZXing } from './external.js'
 import { oom, NotMLElement } from './lib/notml.js'
+import { QOSource } from './lib/qocode/qosource.js'
 
 
 class QRCodeScanner extends NotMLElement {
@@ -25,12 +26,24 @@ class QRCodeScanner extends NotMLElement {
 
   /** Логи ошибки сканирования */
   error(msg) {
-    this.result.innerHTML = `${new Date().toLocaleString()}: ${msg}`
+    this.result.innerHTML = msg
+    console.error(msg)
   }
 
   /** Установка итогов сканирования */
   setResult(msg) {
-    this.result.innerHTML = msg
+    const qos = new QOSource(msg)
+
+    if (qos.valid) {
+      let text = ''
+
+      for (const name in qos.data) {
+        text += `${name}: ${qos.data[name]}<br>`
+      }
+      this.result.innerHTML = text
+    } else {
+      this.result.innerHTML = `Не удалось распознать код:<br>${msg}`
+    }
   }
 
   /** Запуск сканирования */
@@ -63,7 +76,7 @@ class QRCodeScanner extends NotMLElement {
   reset() {
     this.codeReader.reset()
     this.removeAttribute('opened')
-    this.setResult('Наведите камеру на код')
+    this.result.innerHTML = 'Наведите камеру на код'
     this.inProcess = false
   }
 
