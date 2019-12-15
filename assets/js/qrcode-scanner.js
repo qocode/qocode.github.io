@@ -10,11 +10,11 @@ class QRCodeScanner extends NotMLElement {
       [oom.onReady]: element => (this.video = element)
     })
     .div({
-      class: 'qrcode-scanner-result',
+      class: 'qrcode-scanner-result qrcode-scanner-transparent',
       [oom.onReady]: element => (this.result = element)
     }, 'Наведите камеру на код')
-    .AddButton('+')
-    .ScanButton('-')
+    .AddButton({ class: 'qrcode-scanner-transparent' }, '+')
+    .ScanButton({ class: 'qrcode-scanner-transparent' }, '-')
 
   /** Первичная загрузка */
   constructor() {

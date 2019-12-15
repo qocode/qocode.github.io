@@ -246,12 +246,16 @@ qrcode-scanner[opened] {
 .qrcode-scanner-result {
   position: fixed;
   bottom: 4em;
-  right: 0;
-  left: 0;
+  right: 1em;
+  left: 1em;
   padding: 0.4em;
-  background-color: white;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
+  border: 1px solid #ccc;
+  border-radius: .4em;
+}
+
+.qrcode-scanner-transparent {
+  background-color: #fff7;
+  color: #111;
 }
 
 .qrcode-generator__label-text {
