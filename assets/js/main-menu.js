@@ -1,6 +1,6 @@
 import { oom, NotMLElement } from './lib/notml.js'
 
-const { screen, document, HTMLElement } = window
+const { document, HTMLElement } = window
 
 
 class MainMenu extends NotMLElement {
@@ -28,24 +28,6 @@ class MainMenuAction extends HTMLElement {
   }
 
 }
-
-let touchStartX = 0
-
-document.body.addEventListener('touchstart', function touchstart(e) {
-  touchStartX = e.targetTouches[0].clientX
-}, false)
-
-document.body.addEventListener('touchmove', function touchmove(e) {
-  if (e.targetTouches[0].clientX - touchStartX > screen.width / 10) {
-    document.querySelector('main-menu').setAttribute('opened', '')
-  } else if (touchStartX - e.targetTouches[0].clientX > screen.width / 10) {
-    document.querySelector('main-menu').removeAttribute('opened')
-  }
-}, false)
-
-document.body.addEventListener('touchend', function touchend(e) {
-  touchStartX = 0
-}, false)
 
 
 customElements.define('main-menu', MainMenu)

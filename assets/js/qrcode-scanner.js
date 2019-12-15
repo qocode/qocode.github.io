@@ -32,17 +32,22 @@ class QRCodeScanner extends NotMLElement {
 
   /** Установка итогов сканирования */
   setResult(msg) {
-    const qos = new QOSource(msg)
+    if (this.data !== msg) {
+      const qos = new QOSource(msg)
 
-    if (qos.valid) {
-      let text = ''
 
-      for (const name in qos.data) {
-        text += `${name}: ${qos.data[name]}<br>`
+      if (qos.valid) {
+        let text = ''
+
+        for (const name in qos.data) {
+          text += `${name}: ${qos.data[name]}<br>`
+        }
+        this.result.innerHTML = text
+        this.data = msg
+      } else {
+        this.data = null
+        this.result.innerHTML = `Не удалось распознать код:<br>${msg}`
       }
-      this.result.innerHTML = text
-    } else {
-      this.result.innerHTML = `Не удалось распознать код:<br>${msg}`
     }
   }
 
@@ -78,6 +83,7 @@ class QRCodeScanner extends NotMLElement {
     this.removeAttribute('opened')
     this.result.innerHTML = 'Наведите камеру на код'
     this.inProcess = false
+    this.data = null
   }
 
   /** Включение и выключение сканера */
@@ -86,6 +92,13 @@ class QRCodeScanner extends NotMLElement {
       this.reset()
     } else {
       this.start().catch(err => this.error(err))
+    }
+  }
+
+  /** Добавление товара в корзину */
+  append() {
+    if (this.data) {
+      this.result.innerHTML = 'Товар добавлен в корзину.<br>Наведите камеру на новый код'
     }
   }
 
