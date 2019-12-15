@@ -238,11 +238,6 @@ qrcode-scanner[opened] {
   z-index: 2;
 }
 
-.qrcode-scanner-video {
-  max-height: 100%;
-  max-width: 100%;
-}
-
 .qrcode-scanner-result {
   position: fixed;
   bottom: 4em;
@@ -254,8 +249,20 @@ qrcode-scanner[opened] {
 }
 
 .qrcode-scanner-transparent {
-  background-color: #fff7;
+  background-color: #fff9;
   color: #111;
+}
+
+@media screen and (orientation:portrait) {
+  .qrcode-scanner-video {
+    height: 100%;
+  }
+}
+
+@media screen and (orientation:landscape) {
+  .qrcode-scanner-video {
+    width: 100%;
+  }
 }
 
 .qrcode-generator__label-text {
