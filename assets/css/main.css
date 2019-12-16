@@ -221,6 +221,16 @@ add-button:active {
   border: 2px solid;
 }
 
+scanner-order-button {
+  position: fixed;
+  z-index: 1;
+  top: .5em;
+  right: .5em;
+  padding: .3em .6em;
+  border: 1px solid #bbb;
+  border-radius: .6em;
+}
+
 qrcode-scanner {
   display: none;
 }
