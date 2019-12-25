@@ -10,6 +10,7 @@ class OrdersList extends NotMLElement {
   /** Первичная загрузка */
   constructor() {
     super()
+    this.orders = new QOList()
     this.captureURLOrder()
     this.renderList()
   }
@@ -20,8 +21,7 @@ class OrdersList extends NotMLElement {
       const qos = new QOSource(location.href)
 
       if (qos.valid) {
-        // TODO: Добавление заказа
-        alert(JSON.stringify(qos))
+        this.orders.push(qos)
         history.pushState(null, null, location.origin)
       }
     }
