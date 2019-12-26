@@ -29,10 +29,25 @@ class OrdersList extends NotMLElement {
 
   /** Отрисовка списка заказов */
   renderList() {
-    const list = oom.span('test')
+    const orders = this.orders.list({ len: 10 })
+    const list = oom()
+
+    for (const order of orders.values()) {
+      const products = oom()
+
+      for (const product of order.items.values()) {
+        products.div({ class: 'orders-list__product' }, oom
+          .span(product.name)
+          .span(product.price))
+      }
+
+      list.div({ class: 'orders-list__order' }, oom
+        .span(`${order.seller}, №${order.orderID + 1} от ${new Date(order.data).toLocaleString()}`)
+        .div({ class: 'orders-list__products' }, products))
+    }
 
     this.innerHTML = ''
-    this.append(list.element)
+    this.append(oom.div({ class: 'orders-list__container' }, list).element)
   }
 
 }

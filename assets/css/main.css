@@ -2,7 +2,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   font-family: 'Ubuntu', sans-serif;
   height: 100%;
 }
@@ -104,6 +105,7 @@ main-menu .main-menu__background {
   from {
     background: #0000;
   }
+
   to {
     background: #0001;
   }
@@ -118,6 +120,7 @@ main-menu[opened] .main-menu__background {
     left: 0;
     right: 7em;
   }
+
   to {
     left: calc(-100% + 3em);
     right: calc(100% - 3em);
@@ -143,6 +146,7 @@ main-menu .main-menu__content {
     left: calc(-100% + 3em);
     right: calc(100% - 3em);
   }
+
   to {
     left: 0;
     right: 7em;
@@ -296,4 +300,18 @@ qrcode-scanner[opened] {
 
 .qrcode-generator__qr-canvas {
   max-width: 100%;
+}
+
+.orders-list__order {
+  margin-bottom: 1em;
+}
+
+.orders-list__products {
+  margin-left: 1em;
+}
+
+.orders-list__product {
+  display: flex;
+  flex-direction: row;
+  place-content: space-between;
 }

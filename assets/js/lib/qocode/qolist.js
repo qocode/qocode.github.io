@@ -54,12 +54,45 @@ class QOList {
     }
   }
 
+  /** Получение заказа по его порядковому номеру */
+  static getOrderByID({ api, id }) {
+    const list = QOList.getListFromLS(api)
+    const order = list.items[id]
+
+    return {
+      api,
+      seller: list.seller,
+      orderID: id,
+      data: order.data,
+      closed: order.closed,
+      items: order.items
+    }
+  }
+
   /** Добавление заказа и данных в заказ из внешнего источника */
   push(qoSource) {
     const order = QOList.getActiveOrder(qoSource.data)
 
     QOList.pushProduct(order, qoSource.data)
     QOList.setListToLS(qoSource.data.api)
+  }
+
+  /** Список заказов */
+  list({ len } = {}) {
+    const list = []
+
+    len = typeof len === 'number' ? len : 10
+    while (list.length < len && ordersListCache.length > list.length) {
+      const ido = ordersListCache[list.length].split(':')
+      const order = QOList.getOrderByID({
+        id: Number(ido.shift()),
+        api: ido.join(':')
+      })
+
+      list.push(order)
+    }
+
+    return list
   }
 
 }
