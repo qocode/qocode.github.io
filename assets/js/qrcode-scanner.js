@@ -18,7 +18,7 @@ class QRCodeScanner extends NotMLElement {
       class: 'qrcode-scanner-result qrcode-scanner-transparent',
       [oom.onReady]: element => (this.result = element)
     }, 'Наведите камеру на код')
-    .ScannerOrderButton({ class: 'qrcode-scanner-transparent' }, '0₽')
+    // .ScannerOrderButton({ class: 'qrcode-scanner-transparent' }, '0₽')
     .AddButton({
       onclick: () => this.append(),
       class: 'qrcode-scanner-transparent'
@@ -114,7 +114,10 @@ class QRCodeScanner extends NotMLElement {
         ordersList.renderList()
       }
       this.data = null
-      this.result.innerHTML = 'Товар добавлен в корзину.<br>Наведите камеру на новый код'
+      // this.result.innerHTML = 'Товар добавлен в корзину.<br>Наведите камеру на новый код'
+      // Закрываем сканер после выбора товара
+      // Множественное добавление доделаем позже
+      this.toggleScan()
     }
   }
 

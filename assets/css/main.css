@@ -303,7 +303,9 @@ qrcode-scanner[opened] {
 }
 
 .orders-list__order {
-  margin-bottom: 1em;
+  margin-bottom: .5em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #ccc;
 }
 
 .orders-list__products {
@@ -314,4 +316,11 @@ qrcode-scanner[opened] {
   display: flex;
   flex-direction: row;
   place-content: space-between;
+}
+
+.orders-list__product-buy {
+  padding-top: 0.1em;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
 }

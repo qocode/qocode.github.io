@@ -6,9 +6,18 @@ class QOList {
 
   /** Восстанавливаем заказы из localStorage */
   static getListFromLS(api) {
-    const list = localStorage.getItem(`QOList_${api}`)
+    let list = ordersCache[api] || localStorage.getItem(`QOList_${api}`)
 
-    return list ? JSON.parse(list) : null
+    if (list && typeof list === 'string') {
+      list = ordersCache[api] = JSON.parse(list)
+    }
+
+    if (!list) {
+      list = ordersCache[api] = { api, seller: null, items: [] }
+      this.setListToLS(api)
+    }
+
+    return list
   }
 
   /** Сохраняем заказы в localStorage */
@@ -26,9 +35,7 @@ class QOList {
 
   /** Получаем текущий активный заказ */
   static getActiveOrder({ api, seller }) {
-    const sellerData = ordersCache[api] ||
-      this.getListFromLS(api) ||
-      { api, seller, items: [] }
+    const sellerData = this.getListFromLS(api)
     const list = sellerData.items
     const listIdx = list.length - 1
     const order = (list[listIdx] && !list[listIdx].closed && list[listIdx]) ||
@@ -40,7 +47,6 @@ class QOList {
     const orderID = `${list.indexOf(order)}:${api}`
 
     sellerData.seller = seller
-    ordersCache[api] = sellerData
 
     this.pushOrder(orderID)
 
@@ -55,7 +61,7 @@ class QOList {
   }
 
   /** Получение заказа по его порядковому номеру */
-  static getOrderByID({ api, id }) {
+  getOrderByID({ api, id }) {
     const list = QOList.getListFromLS(api)
     const order = list.items[id]
 
@@ -67,6 +73,14 @@ class QOList {
       closed: order.closed,
       items: order.items
     }
+  }
+
+  /** Закрытие заказа по его порядковому номеру */
+  closeById({ api, id }) {
+    const list = QOList.getListFromLS(api)
+
+    list.items[id].closed = true
+    QOList.setListToLS(api)
   }
 
   /** Добавление заказа и данных в заказ из внешнего источника */
@@ -84,7 +98,7 @@ class QOList {
     len = typeof len === 'number' ? len : 10
     while (list.length < len && ordersListCache.length > list.length) {
       const ido = ordersListCache[list.length].split(':')
-      const order = QOList.getOrderByID({
+      const order = this.getOrderByID({
         id: Number(ido.shift()),
         api: ido.join(':')
       })

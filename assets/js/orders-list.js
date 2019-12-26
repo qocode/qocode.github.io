@@ -41,6 +41,26 @@ class OrdersList extends NotMLElement {
           .span(product.price))
       }
 
+      if (!order.closed) {
+        products.div({ class: 'orders-list__product-buy' }, oom
+          .button({
+            onclick: () => {
+              const origin = order.api.search('://') === -1
+                ? `${location.protocol}//${order.api}`
+                : order.api
+              const url = `${origin}/?${JSON.stringify(order.items)}`
+
+              window.open(url)
+
+              this.orders.closeById({
+                id: order.orderID,
+                api: order.api
+              })
+              this.renderList()
+            }
+          }, 'Заказать'))
+      }
+
       list.div({ class: 'orders-list__order' }, oom
         .span(`${order.seller}, №${order.orderID + 1} от ${new Date(order.data).toLocaleString()}`)
         .div({ class: 'orders-list__products' }, products))
