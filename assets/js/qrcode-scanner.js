@@ -1,6 +1,10 @@
 import { ZXing } from './external.js'
 import { oom, NotMLElement } from './lib/notml.js'
 import { QOSource } from './lib/qocode/qosource.js'
+import { QOList } from './lib/qocode/qolist.js'
+
+
+const { document } = window
 
 
 class QRCodeScanner extends NotMLElement {
@@ -14,13 +18,17 @@ class QRCodeScanner extends NotMLElement {
       class: 'qrcode-scanner-result qrcode-scanner-transparent',
       [oom.onReady]: element => (this.result = element)
     }, 'Наведите камеру на код')
-    .ScannerOrderButton({ class: 'qrcode-scanner-transparent' }, '0₽')
-    .AddButton({ class: 'qrcode-scanner-transparent' }, '+')
+    // .ScannerOrderButton({ class: 'qrcode-scanner-transparent' }, '0₽')
+    .AddButton({
+      onclick: () => this.append(),
+      class: 'qrcode-scanner-transparent'
+    }, '+')
     .ScanButton({ class: 'qrcode-scanner-transparent' }, '-')
 
   /** Первичная загрузка */
   constructor() {
     super()
+    this.orders = new QOList()
     this.inProcess = false
     this.codeReader = new ZXing.BrowserMultiFormatReader()
   }
@@ -99,7 +107,17 @@ class QRCodeScanner extends NotMLElement {
   /** Добавление товара в корзину */
   append() {
     if (this.data) {
-      this.result.innerHTML = 'Товар добавлен в корзину.<br>Наведите камеру на новый код'
+      const ordersList = document.querySelector('orders-list')
+
+      this.orders.push(new QOSource(this.data))
+      if (ordersList) {
+        ordersList.renderList()
+      }
+      this.data = null
+      // this.result.innerHTML = 'Товар добавлен в корзину.<br>Наведите камеру на новый код'
+      // Закрываем сканер после выбора товара
+      // Множественное добавление доделаем позже
+      this.toggleScan()
     }
   }
 
