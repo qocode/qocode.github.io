@@ -22,7 +22,7 @@ class OrdersList extends NotMLElement {
 
       if (qos.valid) {
         this.orders.push(qos)
-        history.pushState(null, null, location.origin)
+        history.replaceState(null, null, location.origin)
       }
     }
   }
