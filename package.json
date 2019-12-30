@@ -5,6 +5,11 @@
   "devDependencies": {
     "@nodutilus/eslint-config": "^0.2.1",
     "babel-eslint": "^10.0.3",
-    "eslint": "^6.8.0"
+    "eslint": "^6.8.0",
+    "@zxing/library": "^0.15.2",
+    "pako": "^1.0.10",
+    "qrcode": "^1.4.4",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   }
 }

@@ -1,5 +1,5 @@
-import { QRCode } from './external.js'
 import { oom, NotMLElement } from './lib/notml.js'
+import { QRCode } from './lib/qocode/external.js'
 import { QOSource } from './lib/qocode/qosource.js'
 
 

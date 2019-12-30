@@ -1,6 +1,6 @@
-import 'https://cdn.jsdelivr.net/npm/pako@1.0.10/dist/pako.min.js'
+import { pako } from './external.js'
 
-const { pako, HTMLElement, FormData, URL, URLSearchParams } = window
+const { HTMLElement, FormData, URL, URLSearchParams } = window
 const x64alphabet = '0123456789' +
   'abcdefghijklmnopqrstuvwxyz' +
   'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +

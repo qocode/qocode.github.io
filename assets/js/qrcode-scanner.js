@@ -1,5 +1,5 @@
-import { ZXing } from './external.js'
 import { oom, NotMLElement } from './lib/notml.js'
+import { ZXing } from './lib/qocode/external.js'
 import { QOSource } from './lib/qocode/qosource.js'
 import { QOList } from './lib/qocode/qolist.js'
 
