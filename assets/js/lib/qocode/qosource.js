@@ -1,4 +1,4 @@
-import { pako } from './external.js'
+import { pako } from 'https://cdn.jsdelivr.net/npm/qocode@0.0.1/external.js'
 
 const { HTMLElement, FormData, URL, URLSearchParams } = window
 const x64alphabet = '0123456789' +
