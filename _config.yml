@@ -8,6 +8,7 @@ exclude:
   - .eslintrc
   - .gitignore
   - node_modules
+  - src
   - Gemfile
   - Gemfile.lock
   - LICENSE
