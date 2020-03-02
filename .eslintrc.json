@@ -1,14 +1,11 @@
 {
-  "extends": "@nodutilus",
-  "parser": "babel-eslint",
-  "parserOptions": {
-    "sourceType": "module"
-  },
+  "extends": "@nodutilus/eslint-config",
   "env": {
     "browser": true,
     "node": false
   },
   "rules": {
+    "jsdoc/require-jsdoc": "off",
     "jsdoc/require-param": "off",
     "jsdoc/require-returns": "off"
   }
