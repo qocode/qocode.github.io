@@ -9,7 +9,8 @@
     "@rollup/plugin-alias": "latest",
     "@rollup/plugin-node-resolve": "latest",
     "rollup": "latest",
-    "rollup-plugin-cleanup": "latest"
+    "rollup-plugin-cleanup": "latest",
+    "rollup-plugin-css-only": "latest"
   },
   "scripts": {
     "build": "npx rollup --config"

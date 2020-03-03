@@ -1,6 +1,7 @@
 import alias from '@rollup/plugin-alias'
 import resolve from '@rollup/plugin-node-resolve'
 import cleanup from 'rollup-plugin-cleanup'
+import css from 'rollup-plugin-css-only'
 
 export default [{
   input: 'src/bundle.js',
@@ -12,6 +13,7 @@ export default [{
       ]
     }),
     resolve({ browser: true, preferBuiltins: false }),
-    cleanup({ comments: 'none' })
+    cleanup({ comments: 'none' }),
+    css({ output: 'assets/bundle.css' })
   ]
 }]
