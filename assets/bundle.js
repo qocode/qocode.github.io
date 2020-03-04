@@ -16,7 +16,7 @@ function _defineProperty(obj, key, value) {
 const x64alphabet = '0123456789' + 'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '-_';
 const partDelimiter = '.';
 const x64len = x64alphabet.length;
-const x64RE = new RegExp(`^[${x64alphabet.replace('-', '\\-') + partDelimiter}]+$`);
+const urlValidCharsRE = new RegExp(`^[${x64alphabet.replace('-', '\\-') + partDelimiter}/]+$`);
 function intToX16Pos2(value) {
   return ('0' + value.toString(16)).slice(-2);
 }
@@ -54,8 +54,13 @@ function decodeURLx64(x64text) {
   const uint8Array = x16.match(/.{1,2}/g).map(item => parseInt(item, 16));
   return new Uint8Array(uint8Array);
 }
-function testURLx64(text) {
-  return x64RE.test(String(text));
+function testURLChars(text) {
+  const result = urlValidCharsRE.test(String(text));
+  return result;
+}
+function decodeURISearch(url) {
+  const result = url.replace(/%2F/g, '/');
+  return result;
 }
 const {
   location,
@@ -125,7 +130,7 @@ class QOData {
     const search = result.searchParams;
     const deflateData = {};
     for (const [key, value] of Object.entries(this.raw)) {
-      if (this.deflate === false || this.deflate !== true && testURLx64(key + value)) {
+      if (this.deflate === false || this.deflate !== true && testURLChars(key + value)) {
         search.set(QOData.propsMapShort[key] || key, value);
       } else {
         deflateData[QOData.propsMapShort[key] || key] = value;
@@ -133,9 +138,9 @@ class QOData {
     }
     if (Object.keys(deflateData).length) {
       search.set(deflateJSONURL(deflateData), '');
-      return result.href.replace(/=$/, '');
+      return decodeURISearch(result.href).replace(/=$/, '');
     }
-    return result.href;
+    return decodeURISearch(result.href);
   }
   get productData() {
     const keys = Object.keys(this.raw).filter(key => !QOData.propsSeller.includes(key));
