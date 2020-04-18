@@ -4,11 +4,11 @@ defaults:
     values:
       layout: "default"
 exclude:
-  - .vscode
+  - .vscode/
   - .eslintrc
   - .gitignore
-  - node_modules
-  - src
+  - node_modules/
+  - src/
   - Gemfile
   - Gemfile.lock
   - LICENSE
