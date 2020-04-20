@@ -5,7 +5,7 @@
   "repository": "github:qocode/qocode.github.io",
   "devDependencies": {
     "@nodutilus/eslint-config": "^0.4.3",
-    "@qocode/qocode": "../qocode/qocode-0.2.0.tgz",
+    "qocode": "../qocode/qocode-0.2.0.tgz",
     "@notml/core": "../../notml/core/notml-core-0.0.0-pre4.tgz",
     "@rollup/plugin-alias": "latest",
     "@rollup/plugin-node-resolve": "latest",

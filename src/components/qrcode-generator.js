@@ -1,4 +1,4 @@
-import { QOData } from '@qocode/qocode/qosource'
+import { QOData } from 'qocode'
 import { oom } from '@notml/core'
 
 console.log(QOData)
