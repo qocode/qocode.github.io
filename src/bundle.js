@@ -1,2 +1,2 @@
-import './default-layout.css'
+import './default-theme.css'
 import './components/qrcode-generator.js'

@@ -14,5 +14,4 @@ exclude:
   - LICENSE
   - README.md
   - package.json
-  - package-lock.json
-  - webpack.config.js
+  - rollup.config.js
