@@ -274,7 +274,7 @@ const oom = new Proxy(OOMAbstract, oomHandler);
 const { HTMLElement: HTMLElement$1 } = window;
 class DefaultLayout extends HTMLElement$1 {
   template = oom
-    .div({ class: 'logo' })
+    .aside({ class: 'logo' })
     .header()
     .aside({ class: 'left' })
     .section({ class: 'middle' })
