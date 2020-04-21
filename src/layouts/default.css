@@ -1,3 +1,55 @@
 default-layout {
-  display: grid
+  height: 100%;
+  display: grid;
+  grid-template-columns: 64px 200px 1fr 200px 64px;
+  grid-template-rows: 64px 1fr 64px;
+}
+
+default-layout>* {
+  border: 1px solid #ccc;
+}
+
+default-layout .logo {
+  cursor: pointer;
+  padding: 12px;
+}
+
+default-layout .logo_img {
+  background-image: url('/assets/png/favicon.png');
+  background-size: contain;
+  height: 40px;
+  width: 40px;
+}
+
+default-layout .header {
+  grid-column: 2 / 6;
+}
+
+default-layout .left {
+  grid-column: 2 / 3;
+}
+
+default-layout .right {
+  grid-column: 4 / 5;
+}
+
+default-layout .footer {
+  grid-column: 1 / 6;
+}
+
+default-layout .middle {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+}
+
+default-layout .middle::-webkit-scrollbar-track {
+  background-color: #eee;
+}
+
+default-layout .middle::-webkit-scrollbar {
+  width: 6px;
+}
+
+default-layout .middle::-webkit-scrollbar-thumb {
+  background-color: #ccc;
 }
