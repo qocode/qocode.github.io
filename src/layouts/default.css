@@ -38,7 +38,7 @@ default-layout .footer {
 }
 
 default-layout .middle {
-  overflow-y: scroll;
+  overflow-y: auto;
   scrollbar-width: thin;
 }
 
