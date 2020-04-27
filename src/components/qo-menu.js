@@ -6,14 +6,16 @@ const { HTMLElement } = window
 
 class QOMenu extends HTMLElement {
 
+  constructor() {
+    super()
+    this._items = {}
+  }
+
   template = ({ attributes }) => {
     const tmpl = oom()
     const items = attributes.dataItems
 
-    this._items = {}
-    for (const item of items) {
-      const { text, page } = item
-
+    for (const { text, page } of items) {
       tmpl.div(text, {
         class: 'item',
         onclick: () => (attributes.dataActiveItem = page)
