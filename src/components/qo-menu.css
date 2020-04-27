@@ -1,0 +1,12 @@
+qo-menu .item {
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+qo-menu .item:hover {
+  background: #eee;
+}
+
+qo-menu .item.active {
+  background: #ddd;
+}

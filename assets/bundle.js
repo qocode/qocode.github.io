@@ -95,14 +95,8 @@ class OOMElement extends OOMAbstract {
     this.setAttributes(attributes);
     this.append(child);
   }
-  setAttributes(attributes = {}) {
-    for (const [attrName, attrValue] of Object.entries(attributes)) {
-      if (typeof attrValue === 'function') {
-        this.dom[attrName] = attrValue;
-      } else {
-        this.dom.setAttribute(attrName, attrValue);
-      }
-    }
+  setAttributes(attributes) {
+    setAttributes(this.dom, attributes);
     return this;
   }
 }
@@ -138,6 +132,9 @@ function getObservedAttributes(proto, setters) {
 function applyAttributeChangedCallback(instance, name, oldValue, newValue) {
   const observed = instance.constructor[observedAttributesSymbol];
   if (observed.has(name)) {
+    if (newValue.startsWith('json::')) {
+      newValue = JSON.parse(newValue.replace('json::', ''));
+    }
     if (instance.isConnected) {
       instance[observed.get(name)](oldValue, newValue);
     } else {
@@ -151,22 +148,72 @@ function applyAttributeChangedCallback(instance, name, oldValue, newValue) {
     }
   }
 }
+function setAttribute(instance, attrName, attrValue) {
+  const attrType = typeof attrValue;
+  if (attrType === 'function') {
+    instance[attrName] = attrValue;
+  } else {
+    if (/[A-Z]/.test(attrName)) {
+      attrName = attrName.replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
+    }
+    if (attrType === 'object') {
+      instance.setAttribute(attrName, `json::${JSON.stringify(attrValue)}`);
+    } else {
+      instance.setAttribute(attrName, attrValue);
+    }
+  }
+}
+function getAttribute(instance, attrName) {
+  const ownValue = instance[attrName];
+  let attrValue;
+  if (typeof ownValue === 'function') {
+    attrValue = ownValue;
+  } else {
+    if (/[A-Z]/.test(attrName)) {
+      attrName = attrName.replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
+    }
+    attrValue = instance.getAttribute(attrName);
+    if (attrValue.startsWith('json::')) {
+      attrValue = JSON.parse(attrValue.replace('json::', ''));
+    }
+  }
+  return attrValue;
+}
+function setAttributes(instance, attributes = {}, attrValue) {
+  if (typeof attributes === 'string') {
+    setAttribute(instance, attributes, attrValue);
+  } else {
+    for (const [attrName, attrValue] of Object.entries(attributes)) {
+      setAttribute(instance, attrName, attrValue);
+    }
+  }
+}
 function applyOOMTemplate(instance) {
   const attributeChanged = instance[attributeChangedCacheSymbol];
+  let staticTemplate = instance.constructor.template;
   let {
     template
   } = instance;
+  let templateOptions = typeof staticTemplate === 'function' && staticTemplate.length > 0 || typeof template === 'function' && template.length > 0 || null;
+  if (templateOptions) {
+    templateOptions = {
+      element: instance,
+      attributes: new Proxy(instance, attributesHandler)
+    };
+  }
   if (template instanceof OOMAbstract) {
     template = template.clone();
   } else if (typeof template !== 'string') {
-    let staticTemplate = instance.constructor.template;
     if (staticTemplate instanceof OOMAbstract) {
       staticTemplate = staticTemplate.clone();
     } else if (typeof staticTemplate === 'function') {
-      staticTemplate = instance.constructor.template(instance);
+      staticTemplate = instance.constructor.template(templateOptions);
     }
     if (typeof template === 'function') {
-      template = instance.template(staticTemplate) || staticTemplate;
+      if (templateOptions) {
+        templateOptions.template = staticTemplate;
+      }
+      template = instance.template(templateOptions) || staticTemplate;
     } else {
       template = staticTemplate;
     }
@@ -209,6 +256,10 @@ function defineOOMCustomElements(name, constructor, options) {
   customElementsCache.set(constructor, name);
   return oom;
 }
+const attributesHandler = {
+  get: getAttribute,
+  set: setAttribute
+};
 const elementHandler = {
   get: (target, tagName, proxy) => {
     if (tagName in target) {
@@ -238,6 +289,10 @@ const elementHandler = {
 const oomOrigin = Object.assign(Object.create(null), {
   append: (...args) => {
     return oom().append(...args);
+  },
+  setAttributes: (...args) => {
+    setAttributes(...args);
+    return oom;
   },
   define: defineOOMCustomElements,
   oom: (...args) => {
@@ -272,15 +327,67 @@ const oomHandler = {
 const oom = new Proxy(OOMAbstract, oomHandler);
 
 const { HTMLElement: HTMLElement$1 } = window;
-class DefaultLayout extends HTMLElement$1 {
-  template = oom
+class QOMenu extends HTMLElement$1 {
+  template = ({ attributes }) => {
+    const tmpl = oom();
+    const items = attributes.dataItems;
+    const activeItem = attributes.dataActiveItem;
+    for (const item of items) {
+      tmpl.div(item.text, {
+        class: 'item' + (item.page === activeItem ? ' active' : ''),
+        page: item.page,
+        onclick: event => this.activateItem(event)
+      });
+    }
+    return tmpl
+  }
+  activateItem(event) {
+    const item = event.srcElement;
+    const active = this.querySelector('.active');
+    if (active) {
+      active.classList.remove('active');
+    }
+    item.classList.add('active');
+    if (this.navigate) {
+      this.navigate(item.attributes.page.value);
+    }
+  }
+}
+oom.define('qo-menu', QOMenu);
+
+const { HTMLElement: HTMLElement$1$1, location, history } = window;
+class DefaultLayout extends HTMLElement$1$1 {
+  template = () => oom
     .aside({ class: 'logo' }, oom('div', { class: 'logo_img' }))
     .header({ class: 'header' })
-    .aside({ class: 'left' })
+    .aside({ class: 'left' }, oom(QOMenu, {
+      navigate: page => history.pushState(null, '', page),
+      dataActiveItem: this._activePage,
+      dataItems: [
+        {
+          text: 'Заказы',
+          page: '/'
+        }, {
+          text: 'Партнеры',
+          page: '/partners/'
+        }, {
+          text: 'Создать QR',
+          page: '/create/'
+        }, {
+          text: 'Контакты',
+          page: '/contacts/'
+        }, {
+          text: 'О проекте',
+          page: '/about/'
+        }
+      ]
+    }))
     .section({ class: 'middle' })
     .aside({ class: 'right' })
     .footer({ class: 'footer' })
-  connectedCallback() {
+  constructor() {
+    super();
+    this._activePage = location.pathname;
   }
 }
 oom.define(DefaultLayout);

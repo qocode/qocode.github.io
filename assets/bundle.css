@@ -52,7 +52,7 @@ default-layout .footer {
 }
 
 default-layout .middle {
-  overflow-y: scroll;
+  overflow-y: auto;
   scrollbar-width: thin;
 }
 
@@ -66,4 +66,16 @@ default-layout .middle::-webkit-scrollbar {
 
 default-layout .middle::-webkit-scrollbar-thumb {
   background-color: #ccc;
+}
+qo-menu .item {
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+qo-menu .item:hover {
+  background: #eee;
+}
+
+qo-menu .item.active {
+  background: #ddd;
 }
