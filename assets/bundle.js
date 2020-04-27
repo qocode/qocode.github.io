@@ -162,6 +162,7 @@ function setAttribute(instance, attrName, attrValue) {
       instance.setAttribute(attrName, attrValue);
     }
   }
+  return attrValue;
 }
 function getAttribute(instance, attrName) {
   const ownValue = instance[attrName];
@@ -331,25 +332,23 @@ class QOMenu extends HTMLElement$1 {
   template = ({ attributes }) => {
     const tmpl = oom();
     const items = attributes.dataItems;
-    const activeItem = attributes.dataActiveItem;
+    this._items = {};
     for (const item of items) {
-      tmpl.div(item.text, {
-        class: 'item' + (item.page === activeItem ? ' active' : ''),
-        page: item.page,
-        onclick: event => this.activateItem(event)
-      });
+      const { text, page } = item;
+      tmpl.div(text, {
+        class: 'item',
+        onclick: () => (attributes.dataActiveItem = page)
+      }, div => (this._items[page] = div));
     }
     return tmpl
   }
-  activateItem(event) {
-    const item = event.srcElement;
-    const active = this.querySelector('.active');
-    if (active) {
-      active.classList.remove('active');
+  dataActiveItemChanged(oldValue, newValue) {
+    if (oldValue) {
+      this._items[oldValue].classList.remove('active');
     }
-    item.classList.add('active');
+    this._items[newValue].classList.add('active');
     if (this.navigate) {
-      this.navigate(item.attributes.page.value);
+      this.navigate(newValue);
     }
   }
 }
