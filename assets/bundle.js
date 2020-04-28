@@ -13,6 +13,7 @@ function _defineProperty(obj, key, value) {
   return obj;
 }let _Symbol$hasInstance;
 const customElementsCache = new WeakMap();
+const customElementsOptionsCache = new WeakMap();
 const observedAttributesSymbol = Symbol('observedAttributes');
 const attributeChangedCacheSymbol = Symbol('attributeChangedCache');
 const isOOMInstanceSymbol = Symbol('isOOMInstance');
@@ -150,8 +151,11 @@ function applyAttributeChangedCallback(instance, name, oldValue, newValue) {
 }
 function setAttribute(instance, attrName, attrValue) {
   const attrType = typeof attrValue;
-  if (attrType === 'function' || attrName === 'options') {
+  if (attrType === 'function') {
     instance[attrName] = attrValue;
+  } else if (attrName === 'options') {
+    instance[attrName] = attrValue;
+    customElementsOptionsCache.set(instance, attrValue);
   } else {
     if (/[A-Z]/.test(attrName)) {
       attrName = attrName.replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
@@ -199,7 +203,7 @@ function applyOOMTemplate(instance) {
   if (templateOptions) {
     templateOptions = {
       element: instance,
-      options: instance.options || {},
+      options: customElementsOptionsCache.get(instance) || {},
       attributes: new Proxy(instance, attributesHandler)
     };
   }
@@ -331,9 +335,11 @@ const oom = new Proxy(OOMAbstract, oomHandler);
 const { HTMLElement: HTMLElement$1 } = window;
 class QOMenu extends HTMLElement$1 {
   _items = {}
-  template({ options: { navigate, dataItems }, attributes }) {
-    const tmpl = oom();
+  set options({ navigate }) {
     this._navigate = navigate || (() => console.error('Not implemented'));
+  }
+  template({ options: { dataItems }, attributes }) {
+    const tmpl = oom();
     for (const { text, page } of dataItems) {
       tmpl.div(text, {
         class: 'item',

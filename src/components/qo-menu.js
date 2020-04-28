@@ -8,10 +8,12 @@ class QOMenu extends HTMLElement {
 
   _items = {}
 
-  template({ options: { navigate, dataItems }, attributes }) {
-    const tmpl = oom()
-
+  set options({ navigate }) {
     this._navigate = navigate || (() => console.error('Not implemented'))
+  }
+
+  template({ options: { dataItems }, attributes }) {
+    const tmpl = oom()
 
     for (const { text, page } of dataItems) {
       tmpl.div(text, {
