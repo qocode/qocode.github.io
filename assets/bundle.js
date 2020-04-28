@@ -150,7 +150,7 @@ function applyAttributeChangedCallback(instance, name, oldValue, newValue) {
 }
 function setAttribute(instance, attrName, attrValue) {
   const attrType = typeof attrValue;
-  if (attrType === 'function') {
+  if (attrType === 'function' || attrName === 'options') {
     instance[attrName] = attrValue;
   } else {
     if (/[A-Z]/.test(attrName)) {
@@ -167,7 +167,7 @@ function setAttribute(instance, attrName, attrValue) {
 function getAttribute(instance, attrName) {
   const ownValue = instance[attrName];
   let attrValue;
-  if (typeof ownValue === 'function') {
+  if (typeof ownValue === 'function' || attrName === 'options') {
     attrValue = ownValue;
   } else {
     if (/[A-Z]/.test(attrName)) {
@@ -199,6 +199,7 @@ function applyOOMTemplate(instance) {
   if (templateOptions) {
     templateOptions = {
       element: instance,
+      options: instance.options || {},
       attributes: new Proxy(instance, attributesHandler)
     };
   }
@@ -329,14 +330,11 @@ const oom = new Proxy(OOMAbstract, oomHandler);
 
 const { HTMLElement: HTMLElement$1 } = window;
 class QOMenu extends HTMLElement$1 {
-  constructor() {
-    super();
-    this._items = {};
-  }
-  template = ({ attributes }) => {
+  _items = {}
+  template = ({ element, options: { navigate, dataItems }, attributes }) => {
     const tmpl = oom();
-    const items = attributes.dataItems;
-    for (const { text, page } of items) {
+    element._navigate = navigate || (() => console.error('Not implemented'));
+    for (const { text, page } of dataItems) {
       tmpl.div(text, {
         class: 'item',
         onclick: () => (attributes.dataActiveItem = page)
@@ -349,46 +347,43 @@ class QOMenu extends HTMLElement$1 {
     if (oldValue) {
       this._items[oldValue].classList.remove('active');
     }
-    if (this.navigate) {
-      this.navigate(newValue);
-    }
+    this._navigate(newValue);
   }
 }
 oom.define('qo-menu', QOMenu);
 
 const { HTMLElement: HTMLElement$1$1, location, history } = window;
 class DefaultLayout extends HTMLElement$1$1 {
+  _activePage = location.pathname
   template = () => oom
     .aside({ class: 'logo' }, oom('div', { class: 'logo_img' }))
     .header({ class: 'header' })
     .aside({ class: 'left' }, oom(QOMenu, {
-      navigate: page => history.pushState(null, '', page),
       dataActiveItem: this._activePage,
-      dataItems: [
-        {
-          text: 'Заказы',
-          page: '/'
-        }, {
-          text: 'Партнеры',
-          page: '/partners/'
-        }, {
-          text: 'Создать QR',
-          page: '/create/'
-        }, {
-          text: 'Контакты',
-          page: '/contacts/'
-        }, {
-          text: 'О проекте',
-          page: '/about/'
-        }
-      ]
+      options: {
+        navigate: page => history.pushState(null, '', page),
+        dataItems: [
+          {
+            text: 'Заказы',
+            page: '/'
+          }, {
+            text: 'Партнеры',
+            page: '/partners/'
+          }, {
+            text: 'Создать QR',
+            page: '/create/'
+          }, {
+            text: 'Контакты',
+            page: '/contacts/'
+          }, {
+            text: 'О проекте',
+            page: '/about/'
+          }
+        ]
+      }
     }))
     .section({ class: 'middle' })
     .aside({ class: 'right' })
     .footer({ class: 'footer' })
-  constructor() {
-    super();
-    this._activePage = location.pathname;
-  }
 }
 oom.define(DefaultLayout);

@@ -6,16 +6,14 @@ const { HTMLElement } = window
 
 class QOMenu extends HTMLElement {
 
-  constructor() {
-    super()
-    this._items = {}
-  }
+  _items = {}
 
-  template = ({ attributes }) => {
+  template = ({ element, options: { navigate, dataItems }, attributes }) => {
     const tmpl = oom()
-    const items = attributes.dataItems
 
-    for (const { text, page } of items) {
+    element._navigate = navigate || (() => console.error('Not implemented'))
+
+    for (const { text, page } of dataItems) {
       tmpl.div(text, {
         class: 'item',
         onclick: () => (attributes.dataActiveItem = page)
@@ -30,10 +28,7 @@ class QOMenu extends HTMLElement {
     if (oldValue) {
       this._items[oldValue].classList.remove('active')
     }
-
-    if (this.navigate) {
-      this.navigate(newValue)
-    }
+    this._navigate(newValue)
   }
 
 }
