@@ -331,9 +331,9 @@ const oom = new Proxy(OOMAbstract, oomHandler);
 const { HTMLElement: HTMLElement$1 } = window;
 class QOMenu extends HTMLElement$1 {
   _items = {}
-  template = ({ element, options: { navigate, dataItems }, attributes }) => {
+  template({ options: { navigate, dataItems }, attributes }) {
     const tmpl = oom();
-    element._navigate = navigate || (() => console.error('Not implemented'));
+    this._navigate = navigate || (() => console.error('Not implemented'));
     for (const { text, page } of dataItems) {
       tmpl.div(text, {
         class: 'item',
