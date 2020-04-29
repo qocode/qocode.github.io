@@ -11,7 +11,7 @@ function _defineProperty(obj, key, value) {
   }
 
   return obj;
-} let _Symbol$hasInstance;
+}let _Symbol$hasInstance;
 const customElementsCache = new WeakMap();
 const customElementsOptionsCache = new WeakMap();
 const observedAttributesSymbol = Symbol('observedAttributes');
@@ -370,16 +370,18 @@ const qoContacts = () => oom
 const qoAbout = () => oom
   .div('qoAbout');
 
-const { HTMLElement: HTMLElement$1$1, location, history } = window;
+const { HTMLElement: HTMLElement$1$1, document: document$1, location, history } = window;
+const basicTitle = 'QO-Code';
 class DefaultLayout extends HTMLElement$1$1 {
+  _homePage = '/'
   _pages = {
-    '/': { title: 'Заказы', layout: qoHome },
-    '/partners/': { title: 'Партнеры', layout: qoPartners },
+    '/': { title: 'Мои заказы', layout: qoHome },
     '/create/': { title: 'Создать QR', layout: qoCreate },
-    '/contacts/': { title: 'Партнеры', layout: qoContacts },
+    '/partners/': { title: 'Партнеры', layout: qoPartners },
+    '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }
   }
-  _menuItems = ['/', '/partners/', '/create/', '/contacts/', '/about/']
+  _menuItems = ['/', '/create/', '/partners/', '/contacts/', '/about/']
     .map(page => ({ page, text: this._pages[page].title }))
   _activePage = location.pathname
   _activeLayout = this._pages[this._activePage].layout
@@ -406,13 +408,16 @@ class DefaultLayout extends HTMLElement$1$1 {
     this.onpopstate = () => this.navigate(location.pathname, true);
   }
   connectedCallback() {
+    document$1.title = `${this._pages[this._activePage].title} – ${basicTitle}`;
     window.addEventListener('popstate', this.onpopstate);
   }
   disconnectedCallback() {
+    document$1.title = basicTitle;
     window.removeEventListener('popstate', this.onpopstate);
   }
   navigate(page, back = false) {
     if (this._activePage !== page) {
+      document$1.title = `${this._pages[page].title} – ${basicTitle}`;
       this._activePage = page;
       this._activeLayout = this._pages[page].layout;
       this._menu.dataset.activeItem = page;

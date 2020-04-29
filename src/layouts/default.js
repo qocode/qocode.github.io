@@ -3,20 +3,22 @@ import './default.css'
 import { QOMenu } from '../components/qo-menu.js'
 import { qoHome, qoPartners, qoCreate, qoContacts, qoAbout } from './includes/main-pages.js'
 
-const { HTMLElement, location, history } = window
-
+const { HTMLElement, document, location, history } = window
+const basicTitle = 'QO-Code'
 
 class DefaultLayout extends HTMLElement {
 
+  _homePage = '/'
+
   _pages = {
-    '/': { title: 'Заказы', layout: qoHome },
-    '/partners/': { title: 'Партнеры', layout: qoPartners },
+    '/': { title: 'Мои заказы', layout: qoHome },
     '/create/': { title: 'Создать QR', layout: qoCreate },
-    '/contacts/': { title: 'Партнеры', layout: qoContacts },
+    '/partners/': { title: 'Партнеры', layout: qoPartners },
+    '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }
   }
 
-  _menuItems = ['/', '/partners/', '/create/', '/contacts/', '/about/']
+  _menuItems = ['/', '/create/', '/partners/', '/contacts/', '/about/']
     .map(page => ({ page, text: this._pages[page].title }))
 
   _activePage = location.pathname
@@ -48,15 +50,18 @@ class DefaultLayout extends HTMLElement {
   }
 
   connectedCallback() {
+    document.title = `${this._pages[this._activePage].title} – ${basicTitle}`
     window.addEventListener('popstate', this.onpopstate)
   }
 
   disconnectedCallback() {
+    document.title = basicTitle
     window.removeEventListener('popstate', this.onpopstate)
   }
 
   navigate(page, back = false) {
     if (this._activePage !== page) {
+      document.title = `${this._pages[page].title} – ${basicTitle}`
       this._activePage = page
       this._activeLayout = this._pages[page].layout
       this._menu.dataset.activeItem = page
