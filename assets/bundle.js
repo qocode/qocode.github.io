@@ -133,7 +133,7 @@ function getObservedAttributes(proto, setters) {
 function applyAttributeChangedCallback(instance, name, oldValue, newValue) {
   const observed = instance.constructor[observedAttributesSymbol];
   if (observed.has(name)) {
-    if (newValue.startsWith('json::')) {
+    if (newValue && newValue.startsWith('json::')) {
       newValue = JSON.parse(newValue.replace('json::', ''));
     }
     if (instance.isConnected) {
@@ -349,11 +349,13 @@ class QOMenu extends HTMLElement$1 {
   }
   dataActiveItemChanged(oldValue, newValue) {
     if (oldValue !== newValue) {
-      this._items[newValue].classList.add('active');
-      if (oldValue) {
+      if (newValue in this._items) {
+        this._items[newValue].classList.add('active');
+        this._navigate(newValue);
+      }
+      if (oldValue in this._items) {
         this._items[oldValue].classList.remove('active');
       }
-      this._navigate(newValue);
     }
   }
 }
@@ -381,23 +383,34 @@ class DefaultLayout extends HTMLElement$1$1 {
     '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }
   }
-  _menuItems = ['/', '/create/', '/partners/', '/contacts/', '/about/']
+  _menuItemsTop = ['/', '/create/', '/partners/']
+    .map(page => ({ page, text: this._pages[page].title }))
+  _menuItemsBottom = ['/contacts/', '/about/']
     .map(page => ({ page, text: this._pages[page].title }))
   _activePage = location.pathname
   _activeLayout = this._pages[this._activePage].layout
   template = () => oom
     .aside({ class: 'logo' }, oom('div', { class: 'logo_img' }))
     .header({ class: 'header' })
-    .aside({ class: 'left' },
-      oom(QOMenu,
+    .aside({ class: 'left' }, oom()
+      .oom(QOMenu,
         {
           dataActiveItem: this._activePage,
           options: {
             navigate: page => this.navigate(page),
-            dataItems: this._menuItems
+            dataItems: this._menuItemsTop
           }
         },
-        menu => (this._menu = menu)))
+        menu => (this._menuTop = menu))
+      .oom(QOMenu,
+        {
+          dataActiveItem: this._activePage,
+          options: {
+            navigate: page => this.navigate(page),
+            dataItems: this._menuItemsBottom
+          }
+        },
+        menu => (this._menuBottom = menu)))
     .section({ class: 'middle' },
       this._activeLayout(),
       middle => (this._middle = middle))
@@ -420,7 +433,8 @@ class DefaultLayout extends HTMLElement$1$1 {
       document$1.title = `${this._pages[page].title} – ${basicTitle}`;
       this._activePage = page;
       this._activeLayout = this._pages[page].layout;
-      this._menu.dataset.activeItem = page;
+      this._menuTop.dataset.activeItem = page;
+      this._menuBottom.dataset.activeItem = page;
       this._middle.innerHTML = '';
       this._middle.append(this._activeLayout().dom);
       if (!back) {

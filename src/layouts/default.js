@@ -18,7 +18,10 @@ class DefaultLayout extends HTMLElement {
     '/about/': { title: 'О проекте', layout: qoAbout }
   }
 
-  _menuItems = ['/', '/create/', '/partners/', '/contacts/', '/about/']
+  _menuItemsTop = ['/', '/create/', '/partners/']
+    .map(page => ({ page, text: this._pages[page].title }))
+
+  _menuItemsBottom = ['/contacts/', '/about/']
     .map(page => ({ page, text: this._pages[page].title }))
 
   _activePage = location.pathname
@@ -28,16 +31,25 @@ class DefaultLayout extends HTMLElement {
   template = () => oom
     .aside({ class: 'logo' }, oom('div', { class: 'logo_img' }))
     .header({ class: 'header' })
-    .aside({ class: 'left' },
-      oom(QOMenu,
+    .aside({ class: 'left' }, oom()
+      .oom(QOMenu,
         {
           dataActiveItem: this._activePage,
           options: {
             navigate: page => this.navigate(page),
-            dataItems: this._menuItems
+            dataItems: this._menuItemsTop
           }
         },
-        menu => (this._menu = menu)))
+        menu => (this._menuTop = menu))
+      .oom(QOMenu,
+        {
+          dataActiveItem: this._activePage,
+          options: {
+            navigate: page => this.navigate(page),
+            dataItems: this._menuItemsBottom
+          }
+        },
+        menu => (this._menuBottom = menu)))
     .section({ class: 'middle' },
       this._activeLayout(),
       middle => (this._middle = middle))
@@ -64,7 +76,8 @@ class DefaultLayout extends HTMLElement {
       document.title = `${this._pages[page].title} – ${basicTitle}`
       this._activePage = page
       this._activeLayout = this._pages[page].layout
-      this._menu.dataset.activeItem = page
+      this._menuTop.dataset.activeItem = page
+      this._menuBottom.dataset.activeItem = page
       this._middle.innerHTML = ''
       this._middle.append(this._activeLayout().dom)
       if (!back) {
