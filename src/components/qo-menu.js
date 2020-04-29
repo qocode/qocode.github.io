@@ -26,11 +26,13 @@ class QOMenu extends HTMLElement {
   }
 
   dataActiveItemChanged(oldValue, newValue) {
-    this._items[newValue].classList.add('active')
-    if (oldValue) {
-      this._items[oldValue].classList.remove('active')
+    if (oldValue !== newValue) {
+      this._items[newValue].classList.add('active')
+      if (oldValue) {
+        this._items[oldValue].classList.remove('active')
+      }
+      this._navigate(newValue)
     }
-    this._navigate(newValue)
   }
 
 }

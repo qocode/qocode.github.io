@@ -11,7 +11,7 @@ function _defineProperty(obj, key, value) {
   }
 
   return obj;
-}let _Symbol$hasInstance;
+} let _Symbol$hasInstance;
 const customElementsCache = new WeakMap();
 const customElementsOptionsCache = new WeakMap();
 const observedAttributesSymbol = Symbol('observedAttributes');
@@ -348,47 +348,80 @@ class QOMenu extends HTMLElement$1 {
     return tmpl
   }
   dataActiveItemChanged(oldValue, newValue) {
-    this._items[newValue].classList.add('active');
-    if (oldValue) {
-      this._items[oldValue].classList.remove('active');
+    if (oldValue !== newValue) {
+      this._items[newValue].classList.add('active');
+      if (oldValue) {
+        this._items[oldValue].classList.remove('active');
+      }
+      this._navigate(newValue);
     }
-    this._navigate(newValue);
   }
 }
 oom.define('qo-menu', QOMenu);
 
+const qoHome = () => oom
+  .div('qoHome');
+const qoPartners = () => oom
+  .div('qoPartners');
+const qoCreate = () => oom
+  .div('qoCreate');
+const qoContacts = () => oom
+  .div('qoContacts');
+const qoAbout = () => oom
+  .div('qoAbout');
+
 const { HTMLElement: HTMLElement$1$1, location, history } = window;
 class DefaultLayout extends HTMLElement$1$1 {
+  _pages = {
+    '/': { title: 'Заказы', layout: qoHome },
+    '/partners/': { title: 'Партнеры', layout: qoPartners },
+    '/create/': { title: 'Создать QR', layout: qoCreate },
+    '/contacts/': { title: 'Партнеры', layout: qoContacts },
+    '/about/': { title: 'О проекте', layout: qoAbout }
+  }
+  _menuItems = ['/', '/partners/', '/create/', '/contacts/', '/about/']
+    .map(page => ({ page, text: this._pages[page].title }))
   _activePage = location.pathname
+  _activeLayout = this._pages[this._activePage].layout
   template = () => oom
     .aside({ class: 'logo' }, oom('div', { class: 'logo_img' }))
     .header({ class: 'header' })
-    .aside({ class: 'left' }, oom(QOMenu, {
-      dataActiveItem: this._activePage,
-      options: {
-        navigate: page => history.pushState(null, '', page),
-        dataItems: [
-          {
-            text: 'Заказы',
-            page: '/'
-          }, {
-            text: 'Партнеры',
-            page: '/partners/'
-          }, {
-            text: 'Создать QR',
-            page: '/create/'
-          }, {
-            text: 'Контакты',
-            page: '/contacts/'
-          }, {
-            text: 'О проекте',
-            page: '/about/'
+    .aside({ class: 'left' },
+      oom(QOMenu,
+        {
+          dataActiveItem: this._activePage,
+          options: {
+            navigate: page => this.navigate(page),
+            dataItems: this._menuItems
           }
-        ]
-      }
-    }))
-    .section({ class: 'middle' })
+        },
+        menu => (this._menu = menu)))
+    .section({ class: 'middle' },
+      this._activeLayout(),
+      middle => (this._middle = middle))
     .aside({ class: 'right' })
     .footer({ class: 'footer' })
+  constructor() {
+    super();
+    this.onpopstate = () => this.navigate(location.pathname, true);
+  }
+  connectedCallback() {
+    window.addEventListener('popstate', this.onpopstate);
+  }
+  disconnectedCallback() {
+    window.removeEventListener('popstate', this.onpopstate);
+  }
+  navigate(page, back = false) {
+    if (this._activePage !== page) {
+      this._activePage = page;
+      this._activeLayout = this._pages[page].layout;
+      this._menu.dataset.activeItem = page;
+      this._middle.innerHTML = '';
+      this._middle.append(this._activeLayout().dom);
+      if (!back) {
+        history.pushState(null, '', page);
+      }
+    }
+  }
 }
 oom.define(DefaultLayout);
