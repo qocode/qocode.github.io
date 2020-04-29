@@ -201,11 +201,10 @@ function applyOOMTemplate(instance) {
   } = instance;
   let templateOptions = typeof staticTemplate === 'function' && staticTemplate.length > 0 || typeof template === 'function' && template.length > 0 || null;
   if (templateOptions) {
-    templateOptions = {
+    templateOptions = Object.assign({}, customElementsOptionsCache.get(instance), {
       element: instance,
-      options: customElementsOptionsCache.get(instance) || {},
       attributes: new Proxy(instance, attributesHandler)
-    };
+    });
   }
   if (template instanceof OOMAbstract) {
     template = template.clone();
@@ -338,7 +337,7 @@ class QOMenu extends HTMLElement$1 {
   set options({ navigate }) {
     this._navigate = navigate || (() => console.error('Not implemented'));
   }
-  template({ options: { dataItems }, attributes }) {
+  template({ dataItems, attributes }) {
     const tmpl = oom();
     for (const { text, page } of dataItems) {
       tmpl.div(text, {
