@@ -1,8 +1,8 @@
 default-layout {
   height: 100%;
   display: grid;
-  grid-template-columns: 64px 200px 1fr 200px 64px;
-  grid-template-rows: 64px 1fr 64px;
+  grid-template-columns: 6rem 200px 1fr 200px 6rem;
+  grid-template-rows: 3rem 1fr 3rem;
 }
 
 default-layout>* {
@@ -11,18 +11,23 @@ default-layout>* {
 
 default-layout .logo {
   cursor: pointer;
-  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2F353B;
 }
 
 default-layout .logo_img {
   background-image: url('/assets/png/favicon.png');
   background-size: contain;
-  height: 40px;
-  width: 40px;
+  height: 2rem;
+  width: 2rem;
 }
 
 default-layout .header {
+  display: flex;
   grid-column: 2 / 6;
+  background-color: #2f353b;
 }
 
 default-layout .left {
@@ -34,7 +39,8 @@ default-layout .right {
 }
 
 default-layout .footer {
-  grid-column: 1 / 6;
+  display: flex;
+  grid-column: 2 / 5;
 }
 
 default-layout .middle {
@@ -52,4 +58,31 @@ default-layout .middle::-webkit-scrollbar {
 
 default-layout .middle::-webkit-scrollbar-thumb {
   background-color: #ccc;
+}
+
+default-layout .header-menu,
+default-layout .footer-menu {
+  display: flex;
+}
+
+default-layout .header-menu .item,
+default-layout .footer-menu .item {
+  padding: 0 .5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+}
+
+default-layout .header-menu .item {
+  font-weight: bold;
+  color: #fffe;
+}
+
+default-layout .header-menu .item:hover .text {
+  color: #fffd;
+}
+
+default-layout .header-menu .item.active .text {
+  color: #ffff;
 }

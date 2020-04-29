@@ -1,7 +1,7 @@
 import { oom } from '@notml/core'
 
-export const qoHome = () => oom
-  .div('qoHome')
+export const qoMyOrders = () => oom
+  .div('qoMyOrders')
 export const qoPartners = () => oom
   .div('qoPartners')
 export const qoCreate = () => oom

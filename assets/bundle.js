@@ -340,7 +340,7 @@ class QOMenu extends HTMLElement$1 {
   template({ dataItems, attributes }) {
     const tmpl = oom();
     for (const { text, page } of dataItems) {
-      tmpl.div(text, {
+      tmpl.div(oom.span(text, { class: 'text' }), {
         class: 'item',
         onclick: () => (attributes.dataActiveItem = page)
       }, div => (this._items[page] = div));
@@ -361,8 +361,8 @@ class QOMenu extends HTMLElement$1 {
 }
 oom.define('qo-menu', QOMenu);
 
-const qoHome = () => oom
-  .div('qoHome');
+const qoMyOrders = () => oom
+  .div('qoMyOrders');
 const qoPartners = () => oom
   .div('qoPartners');
 const qoCreate = () => oom
@@ -377,33 +377,40 @@ const basicTitle = 'QO-Code';
 class DefaultLayout extends HTMLElement$1$1 {
   _homePage = '/'
   _pages = {
-    '/': { title: 'Мои заказы', layout: qoHome },
+    '/': { title: 'Мои заказы', layout: qoMyOrders },
     '/create/': { title: 'Создать QR', layout: qoCreate },
     '/partners/': { title: 'Партнеры', layout: qoPartners },
     '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }
   }
-  _menuItemsTop = ['/', '/create/', '/partners/']
+  _menuItemsTop = ['/', '/create/']
     .map(page => ({ page, text: this._pages[page].title }))
-  _menuItemsBottom = ['/contacts/', '/about/']
+  _menuItemsBottom = ['/partners/', '/contacts/', '/about/']
     .map(page => ({ page, text: this._pages[page].title }))
   _activePage = location.pathname
   _activeLayout = this._pages[this._activePage].layout
   template = () => oom
     .aside({ class: 'logo' }, oom('div', { class: 'logo_img' }))
-    .header({ class: 'header' })
-    .aside({ class: 'left' }, oom()
+    .header({ class: 'header' }, oom()
       .oom(QOMenu,
         {
+          class: 'header-menu',
           dataActiveItem: this._activePage,
           options: {
             navigate: page => this.navigate(page),
             dataItems: this._menuItemsTop
           }
         },
-        menu => (this._menuTop = menu))
+        menu => (this._menuTop = menu)))
+    .aside({ class: 'left' })
+    .section({ class: 'middle' },
+      this._activeLayout(),
+      middle => (this._middle = middle))
+    .aside({ class: 'right' })
+    .footer({ class: 'footer' }, oom()
       .oom(QOMenu,
         {
+          class: 'footer-menu',
           dataActiveItem: this._activePage,
           options: {
             navigate: page => this.navigate(page),
@@ -411,11 +418,6 @@ class DefaultLayout extends HTMLElement$1$1 {
           }
         },
         menu => (this._menuBottom = menu)))
-    .section({ class: 'middle' },
-      this._activeLayout(),
-      middle => (this._middle = middle))
-    .aside({ class: 'right' })
-    .footer({ class: 'footer' })
   constructor() {
     super();
     this.onpopstate = () => this.navigate(location.pathname, true);

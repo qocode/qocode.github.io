@@ -1,12 +1,20 @@
 qo-menu .item {
-  padding: 4px 6px;
   cursor: pointer;
 }
 
+qo-menu .item .text {
+  border-bottom: 1px dotted #0000;
+}
+
 qo-menu .item:hover {
-  background: #eee;
+  text-decoration: underline;
 }
 
 qo-menu .item.active {
-  background: #ddd;
+  text-decoration: none;
+  cursor: default;
+}
+
+qo-menu .item.active .text {
+  border-bottom-color: #9c9c9c;
 }

@@ -16,7 +16,7 @@ class QOMenu extends HTMLElement {
     const tmpl = oom()
 
     for (const { text, page } of dataItems) {
-      tmpl.div(text, {
+      tmpl.div(oom.span(text, { class: 'text' }), {
         class: 'item',
         onclick: () => (attributes.dataActiveItem = page)
       }, div => (this._items[page] = div))
