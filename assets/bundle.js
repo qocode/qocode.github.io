@@ -1,4 +1,7 @@
-function _defineProperty(obj, key, value) {
+const customTagNames = new Set();
+const customElementTagName = new Map();
+const customClasses = new Map();
+const customOptions = new WeakMap();function _defineProperty(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
       value: value,
@@ -12,24 +15,53 @@ function _defineProperty(obj, key, value) {
 
   return obj;
 }let _Symbol$hasInstance;
-const customElementsCache = new WeakMap();
-const customElementsOptionsCache = new WeakMap();
-const observedAttributesSymbol = Symbol('observedAttributes');
-const attributeChangedCacheSymbol = Symbol('attributeChangedCache');
-const isOOMInstanceSymbol = Symbol('isOOMInstance');
 const {
   document,
+  customElements,
   DocumentFragment,
-  HTMLElement,
-  customElements
+  HTMLElement
 } = window;
+const isOOMAbstractSymbol = Symbol('isOOMAbstract');
 _Symbol$hasInstance = Symbol.hasInstance;
 class OOMAbstract {
   constructor() {
-    _defineProperty(this, isOOMInstanceSymbol, true);
+    _defineProperty(this, isOOMAbstractSymbol, true);
+    _defineProperty(this, "dom", void 0);
+  }
+  static proxyGetter(instance, tagName, proxy) {
+    if (tagName in instance) {
+      if (typeof instance[tagName] === 'function') {
+        return (...args) => {
+          const result = instance[tagName](...args);
+          return result === instance ? proxy : result;
+        };
+      } else {
+        return instance[tagName];
+      }
+    } else {
+      return (...args) => {
+        instance.append(OOMAbstract.create(OOMElement, tagName, ...args));
+        return proxy;
+      };
+    }
+  }
+  static create(constructor, ...args) {
+    const lastArg = args[args.length - 1];
+    const isCallback = typeof lastArg === 'function' && !customElementTagName.has(lastArg);
+    const callback = isCallback ? args.pop() : null;
+    const element = new constructor(...args);
+    if (callback) {
+      callback(element.dom);
+    }
+    return element;
+  }
+  static factory(tagName, ...args) {
+    const isTagName = typeof tagName === 'string' || customElementTagName.has(tagName);
+    const element = OOMAbstract.create(isTagName ? OOMElement : OOMFragment, tagName, ...args);
+    return element;
   }
   static [_Symbol$hasInstance](instance) {
-    return instance && instance[isOOMInstanceSymbol];
+    return instance && instance[isOOMAbstractSymbol];
   }
   append(child) {
     if (child instanceof OOMAbstract) {
@@ -40,17 +72,21 @@ class OOMAbstract {
     return this;
   }
   oom(...args) {
-    const child = oom(...args);
+    const child = OOMAbstract.factory(...args);
     this.append(child);
     return this;
   }
   clone() {
     const dom = document.importNode(this.dom, true);
     const element = new this.constructor(dom);
-    const proxy = new Proxy(element, elementHandler);
+    const proxy = new Proxy(element, OOMAbstract.proxyHandler);
     return proxy;
   }
 }
+_defineProperty(OOMAbstract, "proxyHandler", {
+  get: OOMAbstract.proxyGetter,
+  set: () => false
+});
 class OOMFragment extends OOMAbstract {
   get html() {
     let html = '';
@@ -70,6 +106,64 @@ class OOMFragment extends OOMAbstract {
   }
 }
 class OOMElement extends OOMAbstract {
+  static resolveTagName(tagName) {
+    let result;
+    if (typeof tagName === 'string' && tagName[0] === tagName[0].toUpperCase()) {
+      result = tagName.replace(/^[A-Z]/, str => str.toLowerCase()).replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
+    } else {
+      result = tagName;
+    }
+    return result;
+  }
+  static setAttribute(instance, attrName, attrValue) {
+    if (attrName === 'options' && customClasses.has(instance.constructor)) {
+      customOptions.set(instance, attrValue);
+    } else {
+      const attrType = typeof attrValue;
+      if (attrType === 'function') {
+        instance[attrName] = attrValue;
+      } else {
+        if (/[A-Z]/.test(attrName)) {
+          attrName = attrName.replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
+        }
+        if (attrType === 'object') {
+          instance.setAttribute(attrName, `json::${JSON.stringify(attrValue)}`);
+        } else {
+          instance.setAttribute(attrName, attrValue);
+        }
+      }
+    }
+    return attrValue;
+  }
+  static getAttribute(instance, attrName) {
+    let attrValue;
+    if (attrName === 'options' && customClasses.has(instance.constructor)) {
+      attrValue = customOptions.get(instance, attrValue);
+    } else {
+      const ownValue = instance[attrName];
+      if (typeof ownValue === 'function') {
+        attrValue = ownValue;
+      } else {
+        if (/[A-Z]/.test(attrName)) {
+          attrName = attrName.replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
+        }
+        attrValue = instance.getAttribute(attrName);
+        if (attrValue.startsWith('json::')) {
+          attrValue = JSON.parse(attrValue.replace('json::', ''));
+        }
+      }
+    }
+    return attrValue;
+  }
+  static setAttributes(instance, attributes = {}, attrValue) {
+    if (typeof attributes === 'string') {
+      OOMElement.setAttribute(instance, attributes, attrValue);
+    } else {
+      for (const [attrName, attrValue] of Object.entries(attributes)) {
+        OOMElement.setAttribute(instance, attrName, attrValue);
+      }
+    }
+  }
   static resolveArgs(attributes, child) {
     if (typeof attributes === 'string' || attributes instanceof OOMAbstract || attributes instanceof DocumentFragment || attributes instanceof HTMLElement) {
       return [child, attributes];
@@ -81,39 +175,43 @@ class OOMElement extends OOMAbstract {
     return this.dom.outerHTML;
   }
   constructor(tagName, attributes, child) {
+    [attributes, child] = OOMElement.resolveArgs(attributes, child);
     super();
     if (tagName instanceof HTMLElement) {
       this.dom = tagName;
     } else {
-      if (customElementsCache.has(tagName)) {
-        tagName = customElementsCache.get(tagName);
+      if (customElementTagName.has(tagName)) {
+        tagName = customElementTagName.get(tagName);
+        customElements.get(tagName).options = attributes ? attributes.options : undefined;
       } else {
-        tagName = resolveTagName(tagName);
+        tagName = OOMElement.resolveTagName(tagName);
+        if (customTagNames.has(tagName)) {
+          customElements.get(tagName).options = attributes ? attributes.options : undefined;
+        }
       }
       this.dom = document.createElement(tagName);
     }
-    [attributes, child] = OOMElement.resolveArgs(attributes, child);
     this.setAttributes(attributes);
     this.append(child);
   }
   setAttributes(attributes) {
-    setAttributes(this.dom, attributes);
+    OOMElement.setAttributes(this.dom, attributes);
     return this;
   }
-}
-function resolveTagName(tagName) {
-  let result;
-  if (typeof tagName === 'string' && tagName[0] === tagName[0].toUpperCase()) {
-    result = tagName.replace(/^[A-Z]/, str => str.toLowerCase()).replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
-  } else {
-    result = tagName;
-  }
-  return result;
-}
+}const {
+  HTMLElement: HTMLElement$1,
+  customElements: customElements$1
+} = window;
+const observedAttributesSymbol = Symbol('observedAttributes');
+const attributeChangedCacheSymbol = Symbol('attributeChangedCache');
+const attributesHandler = {
+  get: OOMElement.getAttribute,
+  set: OOMElement.setAttribute
+};
 function getObservedAttributes(proto, setters) {
   const properties = Object.getOwnPropertyNames(proto);
   const nestedProto = Reflect.getPrototypeOf(proto);
-  if (Object.isPrototypeOf.call(HTMLElement, nestedProto.constructor)) {
+  if (Object.isPrototypeOf.call(HTMLElement$1, nestedProto.constructor)) {
     getObservedAttributes(nestedProto, setters);
   }
   for (const name of properties) {
@@ -128,11 +226,11 @@ function getObservedAttributes(proto, setters) {
       setters.set(attributeName, name);
     }
   }
-  return setters;
+  return setters.size > 0 ? setters : null;
 }
 function applyAttributeChangedCallback(instance, name, oldValue, newValue) {
   const observed = instance.constructor[observedAttributesSymbol];
-  if (observed.has(name)) {
+  if (observed && observed.has(name)) {
     if (newValue && newValue.startsWith('json::')) {
       newValue = JSON.parse(newValue.replace('json::', ''));
     }
@@ -149,50 +247,6 @@ function applyAttributeChangedCallback(instance, name, oldValue, newValue) {
     }
   }
 }
-function setAttribute(instance, attrName, attrValue) {
-  const attrType = typeof attrValue;
-  if (attrType === 'function') {
-    instance[attrName] = attrValue;
-  } else if (attrName === 'options') {
-    instance[attrName] = attrValue;
-    customElementsOptionsCache.set(instance, attrValue);
-  } else {
-    if (/[A-Z]/.test(attrName)) {
-      attrName = attrName.replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
-    }
-    if (attrType === 'object') {
-      instance.setAttribute(attrName, `json::${JSON.stringify(attrValue)}`);
-    } else {
-      instance.setAttribute(attrName, attrValue);
-    }
-  }
-  return attrValue;
-}
-function getAttribute(instance, attrName) {
-  const ownValue = instance[attrName];
-  let attrValue;
-  if (typeof ownValue === 'function' || attrName === 'options') {
-    attrValue = ownValue;
-  } else {
-    if (/[A-Z]/.test(attrName)) {
-      attrName = attrName.replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
-    }
-    attrValue = instance.getAttribute(attrName);
-    if (attrValue.startsWith('json::')) {
-      attrValue = JSON.parse(attrValue.replace('json::', ''));
-    }
-  }
-  return attrValue;
-}
-function setAttributes(instance, attributes = {}, attrValue) {
-  if (typeof attributes === 'string') {
-    setAttribute(instance, attributes, attrValue);
-  } else {
-    for (const [attrName, attrValue] of Object.entries(attributes)) {
-      setAttribute(instance, attrName, attrValue);
-    }
-  }
-}
 function applyOOMTemplate(instance) {
   const attributeChanged = instance[attributeChangedCacheSymbol];
   let staticTemplate = instance.constructor.template;
@@ -201,7 +255,7 @@ function applyOOMTemplate(instance) {
   } = instance;
   let templateOptions = typeof staticTemplate === 'function' && staticTemplate.length > 0 || typeof template === 'function' && template.length > 0 || null;
   if (templateOptions) {
-    templateOptions = Object.assign({}, customElementsOptionsCache.get(instance), {
+    templateOptions = Object.assign({}, customOptions.get(instance), {
       element: instance,
       attributes: new Proxy(instance, attributesHandler)
     });
@@ -237,104 +291,85 @@ function applyOOMTemplate(instance) {
     delete instance[attributeChangedCacheSymbol];
   }
 }
-function defineOOMCustomElements(name, constructor, options) {
-  if (Object.isPrototypeOf.call(HTMLElement, name)) {
-    [constructor, options] = [name, constructor];
-    name = resolveTagName(constructor.name);
-  }
-  const observedAttributes = getObservedAttributes(constructor.prototype, new Map());
-  if (observedAttributes.size > 0) {
-    constructor[observedAttributesSymbol] = observedAttributes;
-    Object.defineProperty(constructor, 'observedAttributes', {
-      value: [...observedAttributes.keys(), ...(constructor.observedAttributes || [])]
-    });
-    constructor.prototype.attributeChangedCallback = (attributeChangedCallback => function __attributeChangedCallback(name, oldValue, newValue) {
-      applyAttributeChangedCallback(this, name, oldValue, newValue);
-      if (attributeChangedCallback) attributeChangedCallback.call(this, name, oldValue, newValue);
-    })(constructor.prototype.attributeChangedCallback);
-  }
-  constructor.prototype.connectedCallback = (connectedCallback => function __connectedCallback() {
-    applyOOMTemplate(this);
-    if (connectedCallback) connectedCallback.apply(this);
-  })(constructor.prototype.connectedCallback);
-  customElements.define(name, constructor, options);
-  customElementsCache.set(constructor, name);
-  return oom;
-}
-const attributesHandler = {
-  get: getAttribute,
-  set: setAttribute
-};
-const elementHandler = {
-  get: (target, tagName, proxy) => {
-    if (tagName in target) {
-      if (typeof target[tagName] === 'function') {
-        return (...args) => {
-          let result = target[tagName](...args);
-          result = result === target ? proxy : result;
-          return result;
-        };
-      } else {
-        return target[tagName];
-      }
-    } else {
-      return (...args) => {
-        const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
-        const element = new OOMElement(tagName, ...args);
-        target.append(element);
-        if (callback) {
-          callback(element.dom);
-        }
-        return proxy;
-      };
+function customClassFactory(constructor) {
+  class OOMCustomElement extends constructor {
+    static get observedAttributes() {
+      return this[observedAttributesSymbol] ? [...this[observedAttributesSymbol].keys(), ...(super.observedAttributes || [])] : super.observedAttributes;
     }
-  },
-  set: () => false
-};
+    constructor() {
+      super(OOMCustomElement.options || {});
+      delete OOMCustomElement.options;
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+      applyAttributeChangedCallback(this, name, oldValue, newValue);
+      if (super.attributeChangedCallback) {
+        super.attributeChangedCallback(name, oldValue, newValue);
+      }
+    }
+    connectedCallback() {
+      applyOOMTemplate(this);
+      if (super.connectedCallback) {
+        super.connectedCallback();
+      }
+    }
+  }
+  _defineProperty(OOMCustomElement, observedAttributesSymbol, getObservedAttributes(constructor.prototype, new Map()));
+  return OOMCustomElement;
+}
+function defineCustomElement(name, constructor, options) {
+  if (Object.isPrototypeOf.call(HTMLElement$1, name)) {
+    [constructor, options] = [name, constructor];
+    name = OOMElement.resolveTagName(constructor.name);
+  }
+  const customClass = customClasses.get(constructor) || customClassFactory(constructor);
+  customElements$1.define(name, customClass, options);
+  customClasses.set(customClass, constructor);
+  customElementTagName.set(constructor, name);
+  customTagNames.add(name);
+}const {
+  customElements: customElements$2
+} = window;
 const oomOrigin = Object.assign(Object.create(null), {
   append: (...args) => {
     return oom().append(...args);
   },
   setAttributes: (...args) => {
-    setAttributes(...args);
+    OOMElement.setAttributes(...args);
     return oom;
   },
-  define: defineOOMCustomElements,
+  define: (...args) => {
+    defineCustomElement(...args);
+    return oom;
+  },
+  getDefined: tagName => {
+    return customClasses.get(customElements$2.get(tagName));
+  },
   oom: (...args) => {
     return oom(...args);
   }
 });
-const oomHandler = {
+const oom = new Proxy(OOMAbstract, {
   apply: (_, __, args) => {
-    const isTagName = typeof args[0] === 'string' || customElementsCache.has(args[0]);
-    const callback = args.length > 1 && typeof args[args.length - 1] === 'function' ? args.pop() : null;
-    const element = new (isTagName ? OOMElement : OOMFragment)(...args);
-    const proxy = new Proxy(element, elementHandler);
-    if (callback) {
-      callback(element.dom);
-    }
+    const element = OOMAbstract.factory(...args);
+    const proxy = new Proxy(element, OOMAbstract.proxyHandler);
     return proxy;
   },
   get: (_, tagName) => {
     return oomOrigin[tagName] || ((...args) => {
-      const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
-      const element = new OOMElement(tagName, ...args);
+      const element = OOMAbstract.create(OOMElement, tagName, ...args);
       const fragment = new OOMFragment(element);
-      const proxy = new Proxy(fragment, elementHandler);
-      if (callback) {
-        callback(element.dom);
-      }
+      const proxy = new Proxy(fragment, OOMAbstract.proxyHandler);
       return proxy;
     });
   },
   set: () => false
-};
-const oom = new Proxy(OOMAbstract, oomHandler);
+});
 
-const { HTMLElement: HTMLElement$1 } = window;
-class QOMenu extends HTMLElement$1 {
+const { HTMLElement: HTMLElement$2 } = window;
+class QOMenu extends HTMLElement$2 {
   _items = {}
-  set options({ navigate }) {
+  constructor({ navigate }) {
+    super();
     this._navigate = navigate || (() => console.error('Not implemented'));
   }
   template({ dataItems, attributes }) {

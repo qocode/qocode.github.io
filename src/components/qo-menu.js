@@ -8,7 +8,8 @@ class QOMenu extends HTMLElement {
 
   _items = {}
 
-  set options({ navigate }) {
+  constructor({ navigate }) {
+    super()
     this._navigate = navigate || (() => console.error('Not implemented'))
   }
 
