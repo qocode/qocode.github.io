@@ -6,16 +6,12 @@ html,
 body {
   font-family: 'Ubuntu', sans-serif;
   height: 100%;
-}
-
-body {
   margin: 0;
-  height: 100%;
 }
 default-layout {
   height: 100%;
   display: grid;
-  grid-template-columns: 6rem 200px 1fr 200px 6rem;
+  grid-template-columns: 6rem 1fr 6rem;
   grid-template-rows: 3rem 1fr 3rem;
 }
 
@@ -40,26 +36,19 @@ default-layout .logo_img {
 
 default-layout .header {
   display: flex;
-  grid-column: 2 / 6;
+  grid-column: 2 / 4;
   background-color: #2f353b;
 }
 
-default-layout .left {
+default-layout .middle {
   grid-column: 2 / 3;
-}
-
-default-layout .right {
-  grid-column: 4 / 5;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 default-layout .footer {
   display: flex;
-  grid-column: 2 / 5;
-}
-
-default-layout .middle {
-  overflow-y: auto;
-  scrollbar-width: thin;
+  grid-column: 2 / 3;
 }
 
 default-layout .middle::-webkit-scrollbar-track {

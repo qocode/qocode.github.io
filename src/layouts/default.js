@@ -41,11 +41,9 @@ class DefaultLayout extends HTMLElement {
           }
         },
         menu => (this._menuTop = menu)))
-    .aside({ class: 'left' })
     .section({ class: 'middle' },
       this._activeLayout(),
       middle => (this._middle = middle))
-    .aside({ class: 'right' })
     .footer({ class: 'footer' }, oom()
       .oom(QOMenu,
         {
