@@ -128,8 +128,7 @@ default-layout .footer__menu {
 default-layout .header__menu .item {
   padding: 0 .5rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
 
 }
 
@@ -149,7 +148,5 @@ default-layout .header__menu .item.active .text {
 default-layout .footer__menu .item {
   padding: 0 1rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-
+  align-items: center;
 }
