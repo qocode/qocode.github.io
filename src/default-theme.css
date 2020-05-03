@@ -8,3 +8,17 @@ body {
   height: 100%;
   margin: 0;
 }
+
+@media screen and (max-device-width: 32rem) {
+  html {
+    font-size: 85%;
+  }
+}
+
+html {
+  --side-background-color: #fcfcfc;
+  --side-border-color: #f5f5f5;
+  --header-background-color: #2F353B;
+  --content-background-color: #fff;
+  --scrollbar-thumb-color: #dcdcdc;
+}

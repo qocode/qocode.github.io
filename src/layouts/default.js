@@ -29,11 +29,11 @@ class DefaultLayout extends HTMLElement {
   _activeLayout = this._pages[this._activePage].layout
 
   template = () => oom
-    .aside({ class: 'logo' }, oom('div', { class: 'logo_img' }))
+    .aside({ class: 'logo' }, oom('div', { class: 'logo__img' }))
     .header({ class: 'header' }, oom()
       .oom(QOMenu,
         {
-          class: 'header-menu',
+          class: 'header__menu',
           dataActiveItem: this._activePage,
           options: {
             navigate: page => this.navigate(page),
@@ -41,20 +41,22 @@ class DefaultLayout extends HTMLElement {
           }
         },
         menu => (this._menuTop = menu)))
-    .section({ class: 'middle' },
-      this._activeLayout(),
-      middle => (this._middle = middle))
-    .footer({ class: 'footer' }, oom()
-      .oom(QOMenu,
-        {
-          class: 'footer-menu',
-          dataActiveItem: this._activePage,
-          options: {
-            navigate: page => this.navigate(page),
-            dataItems: this._menuItemsBottom
-          }
-        },
-        menu => (this._menuBottom = menu)))
+    .div({ class: 'middle' }, oom
+      .section({ class: 'content' },
+        this._activeLayout(),
+        content => (this._content = content))
+      .footer({ class: 'footer' }, oom()
+        .div('QO-Code', { class: 'footer__item' })
+        .oom(QOMenu,
+          {
+            class: 'footer__menu',
+            dataActiveItem: this._activePage,
+            options: {
+              navigate: page => this.navigate(page),
+              dataItems: this._menuItemsBottom
+            }
+          },
+          menu => (this._menuBottom = menu))))
 
   constructor() {
     super()
@@ -78,8 +80,8 @@ class DefaultLayout extends HTMLElement {
       this._activeLayout = this._pages[page].layout
       this._menuTop.dataset.activeItem = page
       this._menuBottom.dataset.activeItem = page
-      this._middle.innerHTML = ''
-      this._middle.append(this._activeLayout().dom)
+      this._content.innerHTML = ''
+      this._content.append(this._activeLayout().dom)
       if (!back) {
         history.pushState(null, '', page)
       }

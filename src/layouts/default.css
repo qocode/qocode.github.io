@@ -1,23 +1,22 @@
 default-layout {
   height: 100%;
+  min-width: 26rem;
   display: grid;
-  grid-template-columns: 6rem 1fr 6rem;
-  grid-template-rows: 3rem 1fr 3rem;
-}
-
-default-layout>* {
-  border: 1px solid #ccc;
+  grid-template-columns: 3rem 1fr 3rem;
+  grid-template-rows: 3rem 1fr;
+  background-color: var(--side-background-color);
 }
 
 default-layout .logo {
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #2F353B;
+  justify-content: flex-end;
+  background-color: var(--header-background-color);
+  padding-right: .5rem;
 }
 
-default-layout .logo_img {
+default-layout .logo__img {
   background-image: url('/assets/png/favicon.png');
   background-size: contain;
   height: 2rem;
@@ -25,24 +24,24 @@ default-layout .logo_img {
 }
 
 default-layout .header {
-  display: flex;
   grid-column: 2 / 4;
-  background-color: #2f353b;
+  display: flex;
+  background-color: var(--header-background-color);
 }
 
 default-layout .middle {
-  grid-column: 2 / 3;
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  grid-template-rows: 1fr 3rem;
+  grid-column: 1 / 4;
   overflow-y: auto;
   scrollbar-width: thin;
-}
-
-default-layout .footer {
-  display: flex;
-  grid-column: 2 / 3;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--side-background-color);
+  background-color: var(--side-background-color);
 }
 
 default-layout .middle::-webkit-scrollbar-track {
-  background-color: #eee;
+  background-color: var(--side-background-color);
 }
 
 default-layout .middle::-webkit-scrollbar {
@@ -50,16 +49,83 @@ default-layout .middle::-webkit-scrollbar {
 }
 
 default-layout .middle::-webkit-scrollbar-thumb {
-  background-color: #ccc;
+  background-color: var(--scrollbar-thumb-color);
 }
 
-default-layout .header-menu,
-default-layout .footer-menu {
+default-layout .content {
+  grid-column: 2 / 3;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--content-background-color);
+  background-color: var(--content-background-color);
+  border-style: solid;
+  border-color: var(--side-border-color);
+  border-width: 0px 1px 0px 1px;
+}
+
+default-layout .content::-webkit-scrollbar-track {
+  background-color: var(--content-background-color);
+}
+
+default-layout .content::-webkit-scrollbar {
+  width: 6px;
+}
+
+default-layout .content::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+}
+
+default-layout .footer {
+  grid-column: 2 / 3;
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--side-background-color);
+  border-style: solid;
+  border-color: var(--side-border-color);
+  border-width: 1px 0px 0px 0px;
+  color: #9c9c9c;
+  font-size: 75%;
+}
+
+default-layout .footer__item {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+@media screen and (min-device-width: 64rem) {
+  default-layout {
+    grid-template-columns: 1fr minmax(min-content, 58rem) 1fr;
+  }
+
+  default-layout .middle {
+    grid-template-columns: 1fr minmax(min-content, 58rem) 1fr;
+  }
+}
+
+@media screen and (max-device-width: 32rem) {
+  default-layout .content {
+    grid-column: 1 / 4;
+    border: none;
+  }
+
+  default-layout .footer {
+    grid-column: 1 / 4;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-device-height: 32rem) {
+  default-layout .content {
+    overflow-y: visible;
+  }
+}
+
+default-layout .header__menu,
+default-layout .footer__menu {
   display: flex;
 }
 
-default-layout .header-menu .item,
-default-layout .footer-menu .item {
+default-layout .header__menu .item {
   padding: 0 .5rem;
   display: flex;
   flex-direction: column;
@@ -67,15 +133,23 @@ default-layout .footer-menu .item {
 
 }
 
-default-layout .header-menu .item {
+default-layout .header__menu .item {
   font-weight: bold;
   color: #fffe;
 }
 
-default-layout .header-menu .item:hover .text {
+default-layout .header__menu .item:hover .text {
   color: #fffd;
 }
 
-default-layout .header-menu .item.active .text {
+default-layout .header__menu .item.active .text {
   color: #ffff;
+}
+
+default-layout .footer__menu .item {
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
 }
