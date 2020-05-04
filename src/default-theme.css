@@ -2,11 +2,24 @@
   box-sizing: border-box;
 }
 
+html {
+  --side-background-color: #fcfcfc;
+  --side-border-color: #f5f5f5;
+  --header-background-color: #2F353B;
+  --content-background-color: #fff;
+  --scrollbar-thumb-color: #dcdcdc;
+  --content-text-color: #26252d;
+  --content-additional-text-color: #696969;
+  --content-label-color: #828282;
+  --footer-text-color: #9c9c9c;
+}
+
 html,
 body {
   font-family: 'Ubuntu', sans-serif;
   height: 100%;
   margin: 0;
+  color: var(--content-text-color);
 }
 
 @media screen and (max-device-width: 32rem) {
@@ -15,10 +28,33 @@ body {
   }
 }
 
-html {
-  --side-background-color: #fcfcfc;
-  --side-border-color: #f5f5f5;
-  --header-background-color: #2F353B;
-  --content-background-color: #fff;
-  --scrollbar-thumb-color: #dcdcdc;
+input,
+select {
+  color: var(--content-text-color);
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+p {
+  margin: 1rem 0;
+}
+
+p:first-child {
+  margin-top: 0;
+}
+
+.theme__text-mono {
+  font-family: 'Ubuntu Mono', monospace;
+}
+
+.theme__label {
+  color: var(--content-label-color);
+  font-size: 90%;
+  padding-bottom: .1rem;
+}
+
+.theme__additional-text {
+  color: var(--content-additional-text-color);
+  font-size: 90%;
 }

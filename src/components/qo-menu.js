@@ -6,6 +6,8 @@ const { HTMLElement } = window
 
 class QOMenu extends HTMLElement {
 
+  static tagName = 'qo-menu'
+
   _items = {}
 
   constructor({ navigate }) {
@@ -17,8 +19,8 @@ class QOMenu extends HTMLElement {
     const tmpl = oom()
 
     for (const { text, page } of dataItems) {
-      tmpl.div(oom.div(text, { class: 'text' }), {
-        class: 'item',
+      tmpl.div(oom.div(text, { class: 'qo-menu__text' }), {
+        class: 'qo-menu__item',
         onclick: () => (attributes.dataActiveItem = page)
       }, div => (this._items[page] = div))
     }
@@ -29,11 +31,11 @@ class QOMenu extends HTMLElement {
   dataActiveItemChanged(oldValue, newValue) {
     if (oldValue !== newValue) {
       if (newValue in this._items) {
-        this._items[newValue].classList.add('active')
+        this._items[newValue].classList.add('qo-menu__item_active')
         this._navigate(newValue)
       }
       if (oldValue in this._items) {
-        this._items[oldValue].classList.remove('active')
+        this._items[oldValue].classList.remove('qo-menu__item_active')
       }
     }
   }
@@ -41,7 +43,7 @@ class QOMenu extends HTMLElement {
 }
 
 
-oom.define('qo-menu', QOMenu)
+oom.define(QOMenu)
 
 
 export {

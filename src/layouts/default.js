@@ -1,7 +1,7 @@
 import { oom } from '@notml/core'
 import './default.css'
 import { QOMenu } from '../components/qo-menu.js'
-import { qoMyOrders, qoPartners, qoCreate, qoContacts, qoAbout } from './includes/main-pages.js'
+import { qoMyOrders, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
 
 const { HTMLElement, document, location, history } = window
 const basicTitle = 'QO-Code'
@@ -12,7 +12,7 @@ class DefaultLayout extends HTMLElement {
 
   _pages = {
     '/': { title: 'Заказы', layout: qoMyOrders },
-    '/get-qr/': { title: 'QR', layout: qoCreate },
+    '/get-qr/': { title: 'QR', layout: qoGetQR },
     '/partners/': { title: 'Партнеры', layout: qoPartners },
     '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }

@@ -84,7 +84,7 @@ default-layout .footer {
   border-style: solid;
   border-color: var(--side-border-color);
   border-width: 1px 0px 0px 0px;
-  color: #9c9c9c;
+  color: var(--footer-text-color);
   font-size: 75%;
 }
 
@@ -126,23 +126,24 @@ default-layout .footer__menu {
   display: flex;
 }
 
-default-layout .header__menu .item,
-default-layout .footer__menu .item {
+default-layout .header__menu .qo-menu__item,
+default-layout .footer__menu .qo-menu__item {
   padding: 0 1rem;
   display: flex;
   align-items: center;
 
 }
 
-default-layout .header__menu .item {
+default-layout .header__menu .qo-menu__item {
   font-weight: bold;
   color: #fffe;
 }
 
-default-layout .header__menu .item:hover .text {
+default-layout .header__menu .qo-menu__item:hover .qo-menu__text {
   color: #fffc
 }
 
-default-layout .header__menu .item.active .text {
+default-layout .header__menu .qo-menu__item_active .qo-menu__text,
+default-layout .header__menu .qo-menu__item_active:hover .qo-menu__text {
   color: #ffff;
 }
