@@ -597,7 +597,7 @@ class QOGenerator extends HTMLElement$1$1 {
   static tagName = 'qo-generator'
   template = ({ attributes }) => oom
     .form({ class: 'qo-generator__form' }, (oom
-      .label(oom
+      .label({ class: 'qo-generator__form_api' }, oom
         .div('URL сервиса', { class: 'theme__label' })
         .input({
           name: 'api',
@@ -607,7 +607,7 @@ class QOGenerator extends HTMLElement$1$1 {
           title: 'URL сервиса обрабтки заказов',
           oninput: () => this.updateQR()
         }))
-      .label(oom
+      .label({ class: 'qo-generator__form_seller' }, oom
         .div('Продавец', { class: 'theme__label' })
         .input({
           name: 'seller',
@@ -617,7 +617,7 @@ class QOGenerator extends HTMLElement$1$1 {
           title: 'Название продавца',
           oninput: () => this.updateQR()
         }))
-      .label(oom
+      .label({ class: 'qo-generator__form_name' }, oom
         .div('Товар или услуга', { class: 'theme__label' })
         .input({
           name: 'name',
@@ -627,7 +627,7 @@ class QOGenerator extends HTMLElement$1$1 {
           title: 'Название товара или услуги',
           oninput: () => this.updateQR()
         }))
-      .label(oom
+      .label({ class: 'qo-generator__form_price' }, oom
         .div('Стоимость, ₽', { class: 'theme__label' })
         .input({
           name: 'price',
