@@ -53,7 +53,7 @@ class QOGenerator extends HTMLElement {
         }))
     ), form => (this._form = form))
     .label({ class: 'qo-generator__url-field' }, oom
-      .div('URL заказа:', { class: 'theme__label' })
+      .div('URL и QR код заказа:', { class: 'theme__label' })
       .input({
         readonly: true,
         onclick: 'this.select()'
