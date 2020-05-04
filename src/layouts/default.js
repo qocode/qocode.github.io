@@ -11,14 +11,14 @@ class DefaultLayout extends HTMLElement {
   _homePage = '/'
 
   _pages = {
-    '/': { title: 'Мои заказы', layout: qoMyOrders },
-    '/create/': { title: 'Создать QR', layout: qoCreate },
+    '/': { title: 'Заказы', layout: qoMyOrders },
+    '/get-qr/': { title: 'QR', layout: qoCreate },
     '/partners/': { title: 'Партнеры', layout: qoPartners },
     '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }
   }
 
-  _menuItemsTop = ['/', '/create/']
+  _menuItemsTop = ['/', '/get-qr/']
     .map(page => ({ page, text: this._pages[page].title }))
 
   _menuItemsBottom = ['/partners/', '/contacts/', '/about/']

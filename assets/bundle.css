@@ -149,8 +149,9 @@ default-layout .footer__menu {
   display: flex;
 }
 
-default-layout .header__menu .item {
-  padding: 0 .5rem;
+default-layout .header__menu .item,
+default-layout .footer__menu .item {
+  padding: 0 1rem;
   display: flex;
   align-items: center;
 
@@ -162,17 +163,11 @@ default-layout .header__menu .item {
 }
 
 default-layout .header__menu .item:hover .text {
-  color: #fffd;
+  color: #fffc
 }
 
 default-layout .header__menu .item.active .text {
   color: #ffff;
-}
-
-default-layout .footer__menu .item {
-  padding: 0 1rem;
-  display: flex;
-  align-items: center;
 }
 qo-menu .item {
   cursor: pointer;
