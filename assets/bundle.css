@@ -85,6 +85,7 @@ default-layout .content {
   border-style: solid;
   border-color: var(--side-border-color);
   border-width: 0px 1px 0px 1px;
+  padding: 1rem;
 }
 
 default-layout .content::-webkit-scrollbar-track {
