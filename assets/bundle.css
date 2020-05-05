@@ -68,19 +68,11 @@ default-layout {
 }
 
 default-layout .logo {
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   background-color: var(--header-background-color);
   padding-right: .5rem;
-}
-
-default-layout .logo__img {
-  background-image: url('/assets/png/favicon.png');
-  background-size: contain;
-  height: 2rem;
-  width: 2rem;
 }
 
 default-layout .header {
@@ -207,6 +199,43 @@ default-layout .header__menu .qo-menu__item_active .qo-menu__text,
 default-layout .header__menu .qo-menu__item_active:hover .qo-menu__text {
   color: #ffff;
 }
+qo-scan-button {
+  display: block;
+  cursor: pointer;
+  height: 2rem;
+  width: 2rem;
+  border-radius: .5rem;
+}
+
+qo-scan-button:hover {
+  background-color: #2196f31a;
+}
+
+qo-scan-button.qo-scan-button_middle {
+  height: 3rem;
+  width: 3rem;
+  border-radius: 1rem;
+}
+
+qo-scan-button .qo-scan-button__image {
+  background-image: url('/assets/png/favicon.png');
+  background-size: contain;
+  height: 100%;
+  width: 100%;
+}
+qo-scanner {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--side-background-color);
+  display: none;
+}
+
+qo-scanner.qo-scanner_opened {
+  display: block;
+}
 qo-menu .qo-menu__item {
   cursor: pointer;
 }
@@ -227,6 +256,37 @@ qo-menu .qo-menu__item_active:hover {
 
 qo-menu .qo-menu__item_active .qo-menu__text {
   border-bottom-color: #9c9c9c;
+}
+.qo-my-orders__layouts {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.qo-my-orders__content {
+  flex-grow: 1;
+}
+
+.qo-my-orders__scan-button-block {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: .5rem;
+  border: 1px solid var(--side-border-color);
+  border-radius: .5rem;
+}
+
+.qo-my-orders__scan-button-block:hover {
+  background-color: #2196f31a;
+}
+
+.qo-my-orders__scan-button-block qo-scan-button:hover {
+  background: none;
+}
+
+.qo-my-orders__scan-button {
+  margin: 0 .7rem;
 }
 qo-generator {
   display: grid;
@@ -265,6 +325,7 @@ qo-generator .qo-generator__url-field {
 qo-generator .qo-generator__qr-canvas-block {
   display: flex;
   overflow: hidden;
+  padding-bottom: .5rem;
 }
 
 qo-generator .qo-generator__qr-canvas {
@@ -278,6 +339,7 @@ qo-generator .qo-generator__qr-canvas-options {
   grid-template-columns: 1fr;
   row-gap: .5rem;
   align-content: start;
+  padding-bottom: .5rem;
 }
 
 qo-generator .qo-generator__qr-canvas-color {

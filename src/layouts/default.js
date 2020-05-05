@@ -1,5 +1,7 @@
 import { oom } from '@notml/core'
 import './default.css'
+import { QOScanButton } from '../components/qo-scan-button.js'
+import { QOScanner } from '../components/qo-scanner.js'
 import { QOMenu } from '../components/qo-menu.js'
 import { qoMyOrders, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
 
@@ -29,7 +31,7 @@ class DefaultLayout extends HTMLElement {
   _activeLayout = this._pages[this._activePage].layout
 
   template = () => oom
-    .aside({ class: 'logo' }, oom('div', { class: 'logo__img' }))
+    .aside({ class: 'logo' }, oom(QOScanButton))
     .header({ class: 'header' }, oom()
       .oom(QOMenu,
         {
@@ -57,6 +59,7 @@ class DefaultLayout extends HTMLElement {
             }
           },
           menu => (this._menuBottom = menu))))
+    .oom(QOScanner, scanner => { this._scanner = scanner })
 
   constructor() {
     super()
@@ -75,15 +78,20 @@ class DefaultLayout extends HTMLElement {
 
   navigate(page, back = false) {
     if (this._activePage !== page) {
-      document.title = `${this._pages[page].title} – ${basicTitle}`
-      this._activePage = page
-      this._activeLayout = this._pages[page].layout
-      this._menuTop.dataset.activeItem = page
-      this._menuBottom.dataset.activeItem = page
-      this._content.innerHTML = ''
-      this._content.append(this._activeLayout().dom)
-      if (!back) {
-        history.pushState(null, '', page)
+      if (this._scanner.isOpened) {
+        this._scanner.close()
+        history.pushState(null, '', this._activePage)
+      } else {
+        document.title = `${this._pages[page].title} – ${basicTitle}`
+        this._activePage = page
+        this._activeLayout = this._pages[page].layout
+        this._menuTop.dataset.activeItem = page
+        this._menuBottom.dataset.activeItem = page
+        this._content.innerHTML = ''
+        this._content.append(this._activeLayout().dom)
+        if (!back) {
+          history.pushState(null, '', page)
+        }
       }
     }
   }

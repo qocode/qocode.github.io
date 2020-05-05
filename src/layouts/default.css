@@ -8,19 +8,11 @@ default-layout {
 }
 
 default-layout .logo {
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   background-color: var(--header-background-color);
   padding-right: .5rem;
-}
-
-default-layout .logo__img {
-  background-image: url('/assets/png/favicon.png');
-  background-size: contain;
-  height: 2rem;
-  width: 2rem;
 }
 
 default-layout .header {

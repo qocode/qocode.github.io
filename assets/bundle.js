@@ -560,8 +560,81 @@ _defineProperty$1(QOData, "propsMap", {
 _defineProperty$1(QOData, "propsSeller", ['api', 'seller']);
 _defineProperty$1(QOData, "propsMapShort", Object.entries(QOData.propsMap).reduce((short, [key, value]) => (short[value] = key) && short, {}));
 
-const { HTMLElement: HTMLElement$2 } = window;
-class QOMenu extends HTMLElement$2 {
+const { HTMLElement: HTMLElement$2, Event, navigator: navigator$1 } = window;
+class QOScanner extends HTMLElement$2 {
+  static tagName = 'qo-scanner'
+  static isMedia = navigator$1 && navigator$1.mediaDevices && navigator$1.mediaDevices.getUserMedia && true
+  static emitOpen() {
+    const event = new Event('qo-scanner::Open');
+    window.dispatchEvent(event);
+  }
+  static emitClose() {
+    const event = new Event('qo-scanner::Close');
+    window.dispatchEvent(event);
+  }
+  isOpened = false
+  isAllowedMediaDevices = null
+  constructor() {
+    super();
+    this._eventOpen = () => this.open();
+    this._eventClose = () => this.close();
+  }
+  connectedCallback() {
+    window.addEventListener('qo-scanner::Open', this._eventOpen);
+    window.addEventListener('qo-scanner::Close', this._eventClose);
+  }
+  disconnectedCallback() {
+    window.removeEventListener('qo-scanner::Open', this._eventOpen);
+    window.removeEventListener('qo-scanner::Close', this._eventClose);
+  }
+  async resolveMediaDevices() {
+    if (this.isAllowedMediaDevices === null) {
+      this.isAllowedMediaDevices = false;
+      if (QOScanner.isMedia) {
+        const devices = await navigator$1.mediaDevices
+          .getUserMedia({ video: true }).catch(error => {
+            console.error(error);
+          });
+        console.log(devices);
+        this.isAllowedMediaDevices = true;
+      }
+    }
+  }
+  open() {
+    this.resolveMediaDevices().then(() => this._open);
+  }
+  _open() {
+    if (!this.isOpened) {
+      this.isOpened = true;
+      this.classList.add('qo-scanner_opened');
+    }
+  }
+  close() {
+    if (this.isOpened) {
+      this.isOpened = false;
+      this.classList.remove('qo-scanner_opened');
+    }
+  }
+}
+oom.define(QOScanner);
+
+const { HTMLElement: HTMLElement$1$1 } = window;
+class QOScanButton extends HTMLElement$1$1 {
+  static tagName = 'qo-scan-button'
+  static template = oom.div({ class: 'qo-scan-button__image' })
+  constructor() {
+    super();
+    this.onclick = event => this.openScanner(event);
+  }
+  openScanner(event) {
+    event.stopPropagation();
+    QOScanner.emitOpen();
+  }
+}
+oom.define(QOScanButton);
+
+const { HTMLElement: HTMLElement$2$1 } = window;
+class QOMenu extends HTMLElement$2$1 {
   static tagName = 'qo-menu'
   _items = {}
   constructor({ navigate }) {
@@ -592,8 +665,8 @@ class QOMenu extends HTMLElement$2 {
 }
 oom.define(QOMenu);
 
-const { HTMLElement: HTMLElement$1$1 } = window;
-class QOGenerator extends HTMLElement$1$1 {
+const { HTMLElement: HTMLElement$3 } = window;
+class QOGenerator extends HTMLElement$3 {
   static tagName = 'qo-generator'
   template = ({ attributes }) => oom
     .form({ class: 'qo-generator__form' }, (oom
@@ -827,8 +900,15 @@ class QOGenerator extends HTMLElement$1$1 {
 }
 oom.define(QOGenerator);
 
-const qoMyOrders = () => oom
-  .div('/ - 404 Not Found');
+const qoMyOrders = () => oom('div', { class: 'qo-my-orders__layouts' })
+  .div({ class: 'qo-my-orders__content' }, '/ - 404 Not Found')
+  .div({
+    class: 'qo-my-orders__scan-button-block',
+    onclick: () => QOScanner.emitOpen()
+  }, oom
+    .div('Открыть', { class: 'theme__additional-text' })
+    .oom(QOScanButton, { class: 'qo-scan-button_middle qo-my-orders__scan-button' })
+    .div('сканнер ', { class: 'theme__additional-text' }));
 const qoGetQR = () => oom
   .p('Укажите параметры оформления заказа.')
   .p({ class: 'theme__additional-text' },
@@ -842,9 +922,9 @@ const qoContacts = () => oom
 const qoAbout = () => oom
   .div('/about/ - 404 Not Found');
 
-const { HTMLElement: HTMLElement$2$1, document: document$2, location: location$1, history } = window;
+const { HTMLElement: HTMLElement$4, document: document$2, location: location$1, history } = window;
 const basicTitle = 'QO-Code';
-class DefaultLayout extends HTMLElement$2$1 {
+class DefaultLayout extends HTMLElement$4 {
   _homePage = '/'
   _pages = {
     '/': { title: 'Заказы', layout: qoMyOrders },
@@ -860,7 +940,7 @@ class DefaultLayout extends HTMLElement$2$1 {
   _activePage = location$1.pathname
   _activeLayout = this._pages[this._activePage].layout
   template = () => oom
-    .aside({ class: 'logo' }, oom('div', { class: 'logo__img' }))
+    .aside({ class: 'logo' }, oom(QOScanButton))
     .header({ class: 'header' }, oom()
       .oom(QOMenu,
         {
@@ -888,6 +968,7 @@ class DefaultLayout extends HTMLElement$2$1 {
             }
           },
           menu => (this._menuBottom = menu))))
+    .oom(QOScanner, scanner => { this._scanner = scanner; })
   constructor() {
     super();
     this.onpopstate = () => this.navigate(location$1.pathname, true);
@@ -902,15 +983,20 @@ class DefaultLayout extends HTMLElement$2$1 {
   }
   navigate(page, back = false) {
     if (this._activePage !== page) {
-      document$2.title = `${this._pages[page].title} – ${basicTitle}`;
-      this._activePage = page;
-      this._activeLayout = this._pages[page].layout;
-      this._menuTop.dataset.activeItem = page;
-      this._menuBottom.dataset.activeItem = page;
-      this._content.innerHTML = '';
-      this._content.append(this._activeLayout().dom);
-      if (!back) {
-        history.pushState(null, '', page);
+      if (this._scanner.isOpened) {
+        this._scanner.close();
+        history.pushState(null, '', this._activePage);
+      } else {
+        document$2.title = `${this._pages[page].title} – ${basicTitle}`;
+        this._activePage = page;
+        this._activeLayout = this._pages[page].layout;
+        this._menuTop.dataset.activeItem = page;
+        this._menuBottom.dataset.activeItem = page;
+        this._content.innerHTML = '';
+        this._content.append(this._activeLayout().dom);
+        if (!back) {
+          history.pushState(null, '', page);
+        }
       }
     }
   }

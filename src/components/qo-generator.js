@@ -1,6 +1,6 @@
 import { QOData, QRCode } from '@qocode/core'
 import { oom } from '@notml/core'
-import './qrcode-generator.css'
+import './qo-generator.css'
 
 const { HTMLElement } = window
 

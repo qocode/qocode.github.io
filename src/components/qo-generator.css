@@ -35,6 +35,7 @@ qo-generator .qo-generator__url-field {
 qo-generator .qo-generator__qr-canvas-block {
   display: flex;
   overflow: hidden;
+  padding-bottom: .5rem;
 }
 
 qo-generator .qo-generator__qr-canvas {
@@ -48,6 +49,7 @@ qo-generator .qo-generator__qr-canvas-options {
   grid-template-columns: 1fr;
   row-gap: .5rem;
   align-content: start;
+  padding-bottom: .5rem;
 }
 
 qo-generator .qo-generator__qr-canvas-color {

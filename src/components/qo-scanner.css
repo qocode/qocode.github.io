@@ -1,0 +1,13 @@
+qo-scanner {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--side-background-color);
+  display: none;
+}
+
+qo-scanner.qo-scanner_opened {
+  display: block;
+}
