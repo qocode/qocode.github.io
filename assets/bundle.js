@@ -595,10 +595,10 @@ class QOScanner extends HTMLElement$2 {
       this._isAllowedMediaDevices = false;
       const devices = await this._codeReader.getVideoInputDevices()
         .catch(error => { console.error(error.message); });
-      if (devices) {
+      if (devices && devices.length > 0) {
         console.log(devices);
         this._isAllowedMediaDevices = true;
-        this.innerHTML = JSON.stringify(devices);
+        this._content.innerHTML = JSON.stringify(devices);
       }
     }
   }

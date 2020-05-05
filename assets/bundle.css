@@ -309,6 +309,27 @@ qo-scan-button .qo-scan-button__image {
   height: 100%;
   width: 100%;
 }
+qo-menu .qo-menu__item {
+  cursor: pointer;
+}
+
+qo-menu .qo-menu__text {
+  border-bottom: 1px dotted #0000;
+}
+
+qo-menu .qo-menu__item:hover {
+  text-decoration: underline;
+}
+
+qo-menu .qo-menu__item_active,
+qo-menu .qo-menu__item_active:hover {
+  text-decoration: none;
+  cursor: default;
+}
+
+qo-menu .qo-menu__item_active .qo-menu__text {
+  border-bottom-color: #9c9c9c;
+}
 .qo-my-orders__layouts {
   height: 100%;
   display: flex;
@@ -339,27 +360,6 @@ qo-scan-button .qo-scan-button__image {
 
 .qo-my-orders__scan-button {
   margin: 0 .7rem;
-}
-qo-menu .qo-menu__item {
-  cursor: pointer;
-}
-
-qo-menu .qo-menu__text {
-  border-bottom: 1px dotted #0000;
-}
-
-qo-menu .qo-menu__item:hover {
-  text-decoration: underline;
-}
-
-qo-menu .qo-menu__item_active,
-qo-menu .qo-menu__item_active:hover {
-  text-decoration: none;
-  cursor: default;
-}
-
-qo-menu .qo-menu__item_active .qo-menu__text {
-  border-bottom-color: #9c9c9c;
 }
 qo-generator {
   display: grid;
