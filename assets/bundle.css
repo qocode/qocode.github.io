@@ -199,6 +199,19 @@ default-layout .header__menu .qo-menu__item_active .qo-menu__text,
 default-layout .header__menu .qo-menu__item_active:hover .qo-menu__text {
   color: #ffff;
 }
+qo-scanner {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--side-background-color);
+  display: none;
+}
+
+qo-scanner.qo-scanner_opened {
+  display: block;
+}
 qo-scan-button {
   display: block;
   cursor: pointer;
@@ -222,19 +235,6 @@ qo-scan-button .qo-scan-button__image {
   background-size: contain;
   height: 100%;
   width: 100%;
-}
-qo-scanner {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: var(--side-background-color);
-  display: none;
-}
-
-qo-scanner.qo-scanner_opened {
-  display: block;
 }
 qo-menu .qo-menu__item {
   cursor: pointer;
