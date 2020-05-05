@@ -192,7 +192,7 @@ default-layout .header__menu .qo-menu__item {
 }
 
 default-layout .header__menu .qo-menu__item:hover .qo-menu__text {
-  color: #fffc
+  color: #fffc;
 }
 
 default-layout .header__menu .qo-menu__item_active .qo-menu__text,
@@ -210,8 +210,82 @@ qo-scanner {
 }
 
 qo-scanner.qo-scanner_opened {
-  display: block;
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  grid-template-rows: 3rem 1fr 3rem;
 }
+
+default-layout .qo-scanner__logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: var(--header-background-color);
+  padding-right: .5rem;
+}
+
+qo-scanner .qo-scanner__header {
+  grid-column: 2 / 4;
+  background-color: var(--header-background-color);
+}
+
+qo-scanner .qo-scanner__content {
+  grid-column: 1 / 4;
+  background-color: var(--content-background-color);
+}
+
+qo-scanner .qo-scanner__footer {
+  grid-column: 1 / 4;
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  background-color: var(--header-background-color);
+}
+
+qo-scanner .qo-scanner__back-button-block {
+  grid-column: 2 / 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+qo-scanner .qo-scanner__back-button {
+  cursor: pointer;
+  height: 2rem;
+  width: 2rem;
+  background: url('/assets/png/back.png') no-repeat center;
+  border-radius: .5rem;
+  margin-right: .5rem;
+}
+
+qo-scanner .qo-scanner__back-button:hover {
+  background-color: #fff1;
+}
+
+@media screen and (min-device-width: 64rem) {
+  qo-scanner.qo-scanner_opened {
+    grid-template-columns: 1fr minmax(min-content, 58rem) 1fr;
+  }
+
+  qo-scanner .qo-scanner__footer {
+    grid-template-columns: 1fr minmax(min-content, 58rem) 1fr;
+  }
+}
+
+@media screen and (max-device-width: 32rem) {
+  qo-scanner .qo-scanner__back-button-block {
+    grid-column: 1 / 4;
+    cursor: pointer;
+  }
+
+  qo-scanner .qo-scanner__back-button-block:hover {
+    background-color: #fff1;
+  }
+
+  qo-scanner .qo-scanner__back-button:hover {
+    background-color: #fff0;
+  }
+}
+
 qo-scan-button {
   display: block;
   cursor: pointer;

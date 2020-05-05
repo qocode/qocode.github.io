@@ -1,59 +1,70 @@
+import { QOData, ZXing } from '@qocode/core'
 import { oom } from '@notml/core'
 import './qo-scanner.css'
 
-const { HTMLElement, Event, navigator } = window
+const { HTMLElement, Event } = window
 
 
 class QOScanner extends HTMLElement {
 
   static tagName = 'qo-scanner'
 
-  static isMedia = navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && true
-
-  static emitOpen() {
-    const event = new Event('qo-scanner::Open')
+  static emitToggle() {
+    const event = new Event('qo-scanner::Toggle')
 
     window.dispatchEvent(event)
   }
 
-  static emitClose() {
-    const event = new Event('qo-scanner::Close')
-
-    window.dispatchEvent(event)
-  }
+  static template = ({ element }) => oom
+    .aside({ class: 'qo-scanner__logo' }, oom(QOScanButton))
+    .header({ class: 'qo-scanner__header' })
+    .section({ class: 'qo-scanner__content' }, content => { element._content = content })
+    .footer({ class: 'qo-scanner__footer' }, oom
+      .div({
+        class: 'qo-scanner__back-button-block',
+        onclick: () => this.emitToggle()
+      }, oom
+        .div({ class: 'qo-scanner__back-button' })))
 
   isOpened = false
 
-  isAllowedMediaDevices = null
+  _isAllowedMediaDevices = null
+
+  _codeReader = new ZXing.BrowserMultiFormatReader()
 
   constructor() {
     super()
-    this._eventOpen = () => this.open()
-    this._eventClose = () => this.close()
+    this._eventToggle = () => this.toggle()
   }
 
   connectedCallback() {
-    window.addEventListener('qo-scanner::Open', this._eventOpen)
-    window.addEventListener('qo-scanner::Close', this._eventClose)
+    window.addEventListener('qo-scanner::Toggle', this._eventToggle)
   }
 
   disconnectedCallback() {
-    window.removeEventListener('qo-scanner::Open', this._eventOpen)
-    window.removeEventListener('qo-scanner::Close', this._eventClose)
+    window.removeEventListener('qo-scanner::Toggle', this._eventToggle)
   }
 
   async resolveMediaDevices() {
-    if (this.isAllowedMediaDevices === null) {
-      this.isAllowedMediaDevices = false
-      if (QOScanner.isMedia) {
-        const devices = await navigator.mediaDevices
-          .getUserMedia({ video: true }).catch(error => {
-            console.error(error)
-          })
+    if (this._isAllowedMediaDevices === null) {
+      this._isAllowedMediaDevices = false
 
+      const devices = await this._codeReader.getVideoInputDevices()
+        .catch(error => { console.error(error.message) })
+
+      if (devices) {
         console.log(devices)
-        this.isAllowedMediaDevices = true
+        this._isAllowedMediaDevices = true
+        this.innerHTML = JSON.stringify(devices)
       }
+    }
+  }
+
+  toggle() {
+    if (this.isOpened) {
+      this.close()
+    } else {
+      this.open()
     }
   }
 
@@ -78,8 +89,29 @@ class QOScanner extends HTMLElement {
 }
 
 
+class QOScanButton extends HTMLElement {
+
+  static tagName = 'qo-scan-button'
+
+  static template = oom.div({ class: 'qo-scan-button__image' })
+
+  constructor() {
+    super()
+    this.onclick = event => this.openScanner(event)
+  }
+
+  openScanner(event) {
+    event.stopPropagation()
+    QOScanner.emitToggle()
+  }
+
+}
+
+
 oom.define(QOScanner)
+oom.define(QOScanButton)
 
 export {
-  QOScanner
+  QOScanner,
+  QOScanButton
 }

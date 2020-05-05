@@ -560,44 +560,53 @@ _defineProperty$1(QOData, "propsMap", {
 _defineProperty$1(QOData, "propsSeller", ['api', 'seller']);
 _defineProperty$1(QOData, "propsMapShort", Object.entries(QOData.propsMap).reduce((short, [key, value]) => (short[value] = key) && short, {}));
 
-const { HTMLElement: HTMLElement$2, Event, navigator: navigator$1 } = window;
+const { HTMLElement: HTMLElement$2, Event } = window;
 class QOScanner extends HTMLElement$2 {
   static tagName = 'qo-scanner'
-  static isMedia = navigator$1 && navigator$1.mediaDevices && navigator$1.mediaDevices.getUserMedia && true
-  static emitOpen() {
-    const event = new Event('qo-scanner::Open');
+  static emitToggle() {
+    const event = new Event('qo-scanner::Toggle');
     window.dispatchEvent(event);
   }
-  static emitClose() {
-    const event = new Event('qo-scanner::Close');
-    window.dispatchEvent(event);
-  }
+  static template = ({ element }) => oom
+    .aside({ class: 'qo-scanner__logo' }, oom(QOScanButton))
+    .header({ class: 'qo-scanner__header' })
+    .section({ class: 'qo-scanner__content' }, content => { element._content = content; })
+    .footer({ class: 'qo-scanner__footer' }, oom
+      .div({
+        class: 'qo-scanner__back-button-block',
+        onclick: () => this.emitToggle()
+      }, oom
+        .div({ class: 'qo-scanner__back-button' })))
   isOpened = false
-  isAllowedMediaDevices = null
+  _isAllowedMediaDevices = null
+  _codeReader = new Kn.BrowserMultiFormatReader()
   constructor() {
     super();
-    this._eventOpen = () => this.open();
-    this._eventClose = () => this.close();
+    this._eventToggle = () => this.toggle();
   }
   connectedCallback() {
-    window.addEventListener('qo-scanner::Open', this._eventOpen);
-    window.addEventListener('qo-scanner::Close', this._eventClose);
+    window.addEventListener('qo-scanner::Toggle', this._eventToggle);
   }
   disconnectedCallback() {
-    window.removeEventListener('qo-scanner::Open', this._eventOpen);
-    window.removeEventListener('qo-scanner::Close', this._eventClose);
+    window.removeEventListener('qo-scanner::Toggle', this._eventToggle);
   }
   async resolveMediaDevices() {
-    if (this.isAllowedMediaDevices === null) {
-      this.isAllowedMediaDevices = false;
-      if (QOScanner.isMedia) {
-        const devices = await navigator$1.mediaDevices
-          .getUserMedia({ video: true }).catch(error => {
-            console.error(error);
-          });
+    if (this._isAllowedMediaDevices === null) {
+      this._isAllowedMediaDevices = false;
+      const devices = await this._codeReader.getVideoInputDevices()
+        .catch(error => { console.error(error.message); });
+      if (devices) {
         console.log(devices);
-        this.isAllowedMediaDevices = true;
+        this._isAllowedMediaDevices = true;
+        this.innerHTML = JSON.stringify(devices);
       }
+    }
+  }
+  toggle() {
+    if (this.isOpened) {
+      this.close();
+    } else {
+      this.open();
     }
   }
   open() {
@@ -616,10 +625,7 @@ class QOScanner extends HTMLElement$2 {
     }
   }
 }
-oom.define(QOScanner);
-
-const { HTMLElement: HTMLElement$1$1 } = window;
-class QOScanButton extends HTMLElement$1$1 {
+class QOScanButton extends HTMLElement$2 {
   static tagName = 'qo-scan-button'
   static template = oom.div({ class: 'qo-scan-button__image' })
   constructor() {
@@ -628,13 +634,14 @@ class QOScanButton extends HTMLElement$1$1 {
   }
   openScanner(event) {
     event.stopPropagation();
-    QOScanner.emitOpen();
+    QOScanner.emitToggle();
   }
 }
+oom.define(QOScanner);
 oom.define(QOScanButton);
 
-const { HTMLElement: HTMLElement$2$1 } = window;
-class QOMenu extends HTMLElement$2$1 {
+const { HTMLElement: HTMLElement$1$1 } = window;
+class QOMenu extends HTMLElement$1$1 {
   static tagName = 'qo-menu'
   _items = {}
   constructor({ navigate }) {
@@ -665,8 +672,8 @@ class QOMenu extends HTMLElement$2$1 {
 }
 oom.define(QOMenu);
 
-const { HTMLElement: HTMLElement$3 } = window;
-class QOGenerator extends HTMLElement$3 {
+const { HTMLElement: HTMLElement$2$1 } = window;
+class QOGenerator extends HTMLElement$2$1 {
   static tagName = 'qo-generator'
   template = ({ attributes }) => oom
     .form({ class: 'qo-generator__form' }, (oom
@@ -904,7 +911,7 @@ const qoMyOrders = () => oom('div', { class: 'qo-my-orders__layouts' })
   .div({ class: 'qo-my-orders__content' }, '/ - 404 Not Found')
   .div({
     class: 'qo-my-orders__scan-button-block',
-    onclick: () => QOScanner.emitOpen()
+    onclick: () => QOScanner.emitToggle()
   }, oom
     .div('Открыть', { class: 'theme__additional-text' })
     .oom(QOScanButton, { class: 'qo-scan-button_middle qo-my-orders__scan-button' })
@@ -922,9 +929,9 @@ const qoContacts = () => oom
 const qoAbout = () => oom
   .div('/about/ - 404 Not Found');
 
-const { HTMLElement: HTMLElement$4, document: document$2, location: location$1, history } = window;
+const { HTMLElement: HTMLElement$3, document: document$2, location: location$1, history } = window;
 const basicTitle = 'QO-Code';
-class DefaultLayout extends HTMLElement$4 {
+class DefaultLayout extends HTMLElement$3 {
   _homePage = '/'
   _pages = {
     '/': { title: 'Заказы', layout: qoMyOrders },

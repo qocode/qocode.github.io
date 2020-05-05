@@ -1,7 +1,6 @@
 import { oom } from '@notml/core'
 import './default.css'
-import { QOScanButton } from '../components/qo-scan-button.js'
-import { QOScanner } from '../components/qo-scanner.js'
+import { QOScanner, QOScanButton } from '../components/qo-scanner.js'
 import { QOMenu } from '../components/qo-menu.js'
 import { qoMyOrders, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
 

@@ -132,7 +132,7 @@ default-layout .header__menu .qo-menu__item {
 }
 
 default-layout .header__menu .qo-menu__item:hover .qo-menu__text {
-  color: #fffc
+  color: #fffc;
 }
 
 default-layout .header__menu .qo-menu__item_active .qo-menu__text,
