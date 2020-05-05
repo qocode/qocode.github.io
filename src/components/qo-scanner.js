@@ -2,7 +2,7 @@ import { QOData, ZXing } from '@qocode/core'
 import { oom } from '@notml/core'
 import './qo-scanner.css'
 
-const { HTMLElement, Event } = window
+const { HTMLElement, Event, FileReader } = window
 
 
 class QOScanner extends HTMLElement {
@@ -25,6 +25,22 @@ class QOScanner extends HTMLElement {
         onclick: () => this.emitToggle()
       }, oom
         .div({ class: 'qo-scanner__back-button' })))
+
+  static tmplNotMedia = ({ element }) => oom('div', { class: 'qo-scanner__not-media' })
+    .div(oom
+      .p('К сожалению на Вашем устройстве не доступен захват видео с камеры.')
+      .p({ class: 'theme__additional-text' },
+        'Для оформления заказа, Вы можете воспользоваться' +
+        ' стандартнымb приложениями камеры или сканера QR-кодов,' +
+        ' и перейти на страницу заказа по ссылке в коде.')
+      .p({ class: 'theme__additional-text' },
+        'Или выбрать фотографию с QR кодом из галереи.')
+      .input({
+        type: 'file',
+        accept: 'image/*',
+        onchange: event => element.loadFromFile(event.srcElement.files[0])
+      }, input => { element._imgInput = input }))
+    .div({ class: 'qo-scanner__img-from-file-preview' }, div => { element._imgPreview = div })
 
   isOpened = false
 
@@ -56,6 +72,8 @@ class QOScanner extends HTMLElement {
         console.log(devices)
         this._isAllowedMediaDevices = true
         this._content.innerHTML = JSON.stringify(devices)
+      } else {
+        this._content.append(QOScanner.tmplNotMedia({ element: this }).dom)
       }
     }
   }
@@ -83,6 +101,21 @@ class QOScanner extends HTMLElement {
     if (this.isOpened) {
       this.isOpened = false
       this.classList.remove('qo-scanner_opened')
+      if (this._imgInput) {
+        this._imgInput.value = ''
+        this._imgPreview.style.backgroundImage = ''
+      }
+    }
+  }
+
+  loadFromFile(file) {
+    if (file) {
+      const reader = new FileReader()
+
+      reader.readAsDataURL(file)
+      reader.onload = event => {
+        this._imgPreview.style.backgroundImage = `url('${event.srcElement.result}')`
+      }
     }
   }
 

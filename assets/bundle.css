@@ -199,6 +199,37 @@ default-layout .header__menu .qo-menu__item_active .qo-menu__text,
 default-layout .header__menu .qo-menu__item_active:hover .qo-menu__text {
   color: #ffff;
 }
+.qo-my-orders__layouts {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.qo-my-orders__content {
+  flex-grow: 1;
+}
+
+.qo-my-orders__scan-button-block {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: .5rem;
+  border: 1px solid var(--side-border-color);
+  border-radius: .5rem;
+}
+
+.qo-my-orders__scan-button-block:hover {
+  background-color: #2196f31a;
+}
+
+.qo-my-orders__scan-button-block qo-scan-button:hover {
+  background: none;
+}
+
+.qo-my-orders__scan-button {
+  margin: 0 .7rem;
+}
 qo-scanner {
   position: fixed;
   top: 0;
@@ -231,6 +262,21 @@ qo-scanner .qo-scanner__header {
 qo-scanner .qo-scanner__content {
   grid-column: 1 / 4;
   background-color: var(--content-background-color);
+}
+
+qo-scanner .qo-scanner__not-media {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+qo-scanner .qo-scanner__img-from-file-preview {
+  flex-grow: 1;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  margin-top: 1rem;
 }
 
 qo-scanner .qo-scanner__footer {
@@ -329,37 +375,6 @@ qo-menu .qo-menu__item_active:hover {
 
 qo-menu .qo-menu__item_active .qo-menu__text {
   border-bottom-color: #9c9c9c;
-}
-.qo-my-orders__layouts {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.qo-my-orders__content {
-  flex-grow: 1;
-}
-
-.qo-my-orders__scan-button-block {
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: .5rem;
-  border: 1px solid var(--side-border-color);
-  border-radius: .5rem;
-}
-
-.qo-my-orders__scan-button-block:hover {
-  background-color: #2196f31a;
-}
-
-.qo-my-orders__scan-button-block qo-scan-button:hover {
-  background: none;
-}
-
-.qo-my-orders__scan-button {
-  margin: 0 .7rem;
 }
 qo-generator {
   display: grid;

@@ -32,6 +32,21 @@ qo-scanner .qo-scanner__content {
   background-color: var(--content-background-color);
 }
 
+qo-scanner .qo-scanner__not-media {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+qo-scanner .qo-scanner__img-from-file-preview {
+  flex-grow: 1;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  margin-top: 1rem;
+}
+
 qo-scanner .qo-scanner__footer {
   grid-column: 1 / 4;
   display: grid;
