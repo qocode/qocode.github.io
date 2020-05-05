@@ -58,7 +58,7 @@ class QOScanner extends HTMLElement {
   }
 
   open() {
-    this.resolveMediaDevices().then(() => this._open)
+    this.resolveMediaDevices().then(() => this._open())
   }
 
   _open() {
