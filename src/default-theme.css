@@ -16,10 +16,14 @@ html {
 
 html,
 body {
-  font-family: 'Ubuntu', sans-serif;
   height: 100%;
+}
+
+body {
+  font-family: 'Ubuntu', sans-serif;
   margin: 0;
   color: var(--content-text-color);
+  min-width: 22rem;
 }
 
 @media screen and (max-device-width: 32rem) {

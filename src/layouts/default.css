@@ -1,6 +1,5 @@
 default-layout {
   height: 100%;
-  min-width: 26rem;
   display: grid;
   grid-template-columns: 3rem 1fr 3rem;
   grid-template-rows: 3rem 1fr;

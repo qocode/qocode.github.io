@@ -19,10 +19,14 @@ class QOScanner extends HTMLElement {
     .aside({ class: 'qo-scanner__logo' }, oom(QOScanButton))
     .header({ class: 'qo-scanner__header' })
     .section({ class: 'qo-scanner__content' }, content => { element._content = content })
+    .section({ class: 'qo-scanner__result qo-scanner_hide-block' },
+      oom
+        .div({ class: 'qo-scanner__result-content' }, result => { element._result = result }),
+      resultBlock => { element._resultBlock = resultBlock })
     .footer({ class: 'qo-scanner__footer' }, oom
       .div({
         class: 'qo-scanner__back-button-block',
-        onclick: () => this.emitToggle()
+        onclick: () => element.back()
       }, oom
         .div({ class: 'qo-scanner__back-button' })))
 
@@ -41,8 +45,11 @@ class QOScanner extends HTMLElement {
         onchange: event => element.loadFromFile(event.srcElement.files[0])
       }, input => { element._imgInput = input }))
     .div({ class: 'qo-scanner__img-from-file-preview' }, div => { element._imgPreview = div })
+    .img({ class: 'qo-scanner__img-from-file' }, img => { element._imgFile = img })
 
   isOpened = false
+
+  isResultOpened = false
 
   _isAllowedMediaDevices = null
 
@@ -78,6 +85,14 @@ class QOScanner extends HTMLElement {
     }
   }
 
+  back() {
+    if (this.isResultOpened) {
+      this.closeResultBlock()
+    } else {
+      this.toggle()
+    }
+  }
+
   toggle() {
     if (this.isOpened) {
       this.close()
@@ -103,20 +118,87 @@ class QOScanner extends HTMLElement {
       this.classList.remove('qo-scanner_opened')
       if (this._imgInput) {
         this._imgInput.value = ''
+        this._imgPreview.classList.remove('qo-scanner__img-from-file-preview_selected')
         this._imgPreview.style.backgroundImage = ''
+        this._imgFile.src = ''
       }
+      this.closeResultBlock()
     }
   }
 
   loadFromFile(file) {
     if (file) {
-      const reader = new FileReader()
+      this.showMessage({ message: 'Выполняем загрузку файла...' })
+      setTimeout(() => {
+        if (this.isResultOpened) {
+          const reader = new FileReader()
 
-      reader.readAsDataURL(file)
-      reader.onload = event => {
-        this._imgPreview.style.backgroundImage = `url('${event.srcElement.result}')`
-      }
+          reader.readAsDataURL(file)
+          reader.onload = event => {
+            this._imgPreview.classList.add('qo-scanner__img-from-file-preview_selected')
+            this._imgPreview.style.backgroundImage = `url('${event.srcElement.result}')`
+            this._imgFile.src = event.srcElement.result
+            this.decodeFromImage(this._imgFile)
+          }
+        }
+      }, 10)
     }
+  }
+
+  decodeFromImage(img) {
+    this.showMessage({ message: 'Выполняем распознавание кода...' })
+    setTimeout(() => {
+      if (this.isResultOpened) {
+        this._codeReader.decodeFromImage(img).then((result) => {
+          const qoData = new QOData(result.text)
+
+          if (qoData.valid) {
+            this.showResult(qoData)
+          } else {
+            this.showMessage({ message: 'В коде не найдены параметры заказа.' })
+          }
+        }).catch((error) => {
+          this.showMessage({ error, message: 'Не удалось распознать QR код.' })
+        }).then(() => {
+          this._codeReader.reset()
+        })
+      }
+    }, 10)
+  }
+
+  showResult(result) {
+    this._result.innerHTML = JSON.stringify(result, null, '  ')
+
+    this.openResultBlock()
+    console.log(result)
+  }
+
+  showMessage({ error, message }) {
+    const tmpl = oom()
+
+    if (message) {
+      tmpl.p(message)
+    }
+    if (error) {
+      tmpl.p({ class: 'theme__additional-text' }, error.message || error)
+      console.error(error)
+    }
+    this._result.innerHTML = ''
+    this._result.append(tmpl.dom)
+    this.openResultBlock()
+  }
+
+  openResultBlock() {
+    this.isResultOpened = true
+    this._resultBlock.classList.remove('qo-scanner_hide-block')
+    this._content.classList.add('qo-scanner_hide-block')
+  }
+
+  closeResultBlock() {
+    this.isResultOpened = false
+    this._content.classList.remove('qo-scanner_hide-block')
+    this._resultBlock.classList.add('qo-scanner_hide-block')
+    this._result.innerHTML = ''
   }
 
 }
