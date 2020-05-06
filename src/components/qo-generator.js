@@ -63,7 +63,11 @@ class QOGenerator extends HTMLElement {
       .canvas({
         class: 'qo-generator__qr-canvas',
         style: 'height: 0; width: 0;'
-      }, canvas => (this._canvas = canvas)))
+      }, canvas => (this._canvas = canvas))
+      .div({ class: 'qo-generator__qr-canvas-cfg' }, oom
+        .a('Скачать', { href: '#', class: 'theme__additional-text' },
+          a => { this._dwnldUrl = a })
+      ))
     .div({ class: 'qo-generator__qr-canvas-options' }, oom
       .label(oom
         .div('Размер точек', { class: 'theme__label' })
@@ -228,6 +232,16 @@ class QOGenerator extends HTMLElement {
     this._drawTimer = setTimeout(() => this.drawQR(adapt), 300)
   }
 
+  _resolveFileName(qoData) {
+    let { name, price } = qoData.raw
+
+    name = name || qoData.raw.seller
+    name = name ? name + '_' : ''
+    price = price ? price + '_' : ''
+
+    return `qocode_${name}${price}${new Date().toJSON().slice(0, -5)}.png`
+  }
+
   /** Отрисовка QR кода по данным формы */
   drawQR(adapt = true) {
     const qoData = new QOData(this._form)
@@ -239,6 +253,8 @@ class QOGenerator extends HTMLElement {
       if (error) {
         console.error(error)
       }
+      this._dwnldUrl.download = this._resolveFileName(qoData)
+      this._dwnldUrl.href = this._canvas.toDataURL()
       if (this._canvas.width > this._canvas.parentNode.clientWidth &&
         this._options.scale > 1) {
         --this._options.scale

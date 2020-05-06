@@ -34,6 +34,7 @@ qo-generator .qo-generator__url-field {
 
 qo-generator .qo-generator__qr-canvas-block {
   display: flex;
+  flex-direction: column;
   overflow: hidden;
   padding-bottom: .5rem;
 }
@@ -42,6 +43,10 @@ qo-generator .qo-generator__qr-canvas {
   border: 1px solid var(--side-border-color);
   border-radius: 2px;
   box-sizing: content-box;
+}
+
+qo-generator .qo-generator__qr-canvas-cfg {
+  padding: .1rem .2rem;
 }
 
 qo-generator .qo-generator__qr-canvas-options {
@@ -86,6 +91,6 @@ qo-generator .qo-generator__color-label {
   }
 
   qo-generator .qo-generator__qr-canvas-block {
-    justify-content: center;
+    align-items: center;
   }
 }
