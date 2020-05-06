@@ -687,7 +687,10 @@ class QOScanner extends HTMLElement$2 {
           if (qoData.valid) {
             this.showResult(qoData);
           } else {
-            this.showMessage({ message: 'В коде не найдены параметры заказа.' });
+            this.showMessage({
+              message: 'В коде не найдены параметры заказа.',
+              details: result.text
+            });
           }
         }).catch((error) => {
           this.showMessage({ error, message: 'Не удалось распознать QR код.' });
@@ -702,14 +705,17 @@ class QOScanner extends HTMLElement$2 {
     this.openResultBlock();
     console.log(result);
   }
-  showMessage({ error, message }) {
-    const tmpl = oom();
+  showMessage({ error, message, details }) {
+    const tmpl = oom('div');
     if (message) {
       tmpl.p(message);
     }
     if (error) {
       tmpl.p({ class: 'theme__additional-text' }, error.message || error);
       console.error(error);
+    }
+    if (details) {
+      tmpl.p({ class: 'theme__additional-text' }, details);
     }
     this._result.innerHTML = '';
     this._result.append(tmpl.dom);

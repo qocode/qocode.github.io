@@ -42,6 +42,8 @@ select {
 
 p {
   margin: 1rem 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 p:first-child {
@@ -209,6 +211,7 @@ qo-scanner {
   bottom: 0;
   left: 0;
   background-color: var(--side-background-color);
+  min-width: 22rem;
   display: none;
 }
 
@@ -260,7 +263,7 @@ qo-scanner .qo-scanner_hide-block {
 }
 
 qo-scanner .qo-scanner__not-media {
-  padding: 1rem;
+  margin: 1rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -276,16 +279,16 @@ qo-scanner .qo-scanner__img-from-file-preview {
   display: none;
 }
 
-qo-scanner .qo-scanner__img-from-file {
-  display: none;
-}
-
 qo-scanner .qo-scanner__img-from-file-preview_selected {
   display: block;
 }
 
+qo-scanner .qo-scanner__img-from-file {
+  display: none;
+}
+
 qo-scanner .qo-scanner__result-content {
-  padding: 1rem;
+  margin: 1rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
