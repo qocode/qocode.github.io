@@ -47,6 +47,11 @@ class QOScanner extends HTMLElement {
     .div({ class: 'qo-scanner__img-from-file-preview' }, div => { element._imgPreview = div })
     .img({ class: 'qo-scanner__img-from-file' }, img => { element._imgFile = img })
 
+  static tmplMedia = ({ element }) => oom('div', { class: 'qo-scanner__media' })
+    .video({
+      class: 'qo-scanner__video'
+    }, video => { element._video = video })
+
   isOpened = false
 
   isResultOpened = false
@@ -78,7 +83,8 @@ class QOScanner extends HTMLElement {
       if (devices && devices.length > 0) {
         console.log(devices)
         this._isAllowedMediaDevices = true
-        this._content.innerHTML = JSON.stringify(devices)
+        this._content.append(QOScanner.tmplMedia({ element: this }).dom)
+        this.startScanner()
       } else {
         this._content.append(QOScanner.tmplNotMedia({ element: this }).dom)
       }
@@ -88,6 +94,9 @@ class QOScanner extends HTMLElement {
   back() {
     if (this.isResultOpened) {
       this.closeResultBlock()
+      if (this._isAllowedMediaDevices) {
+        this.startScanner()
+      }
     } else {
       this.toggle()
     }
@@ -109,6 +118,9 @@ class QOScanner extends HTMLElement {
     if (!this.isOpened) {
       this.isOpened = true
       this.classList.add('qo-scanner_opened')
+      if (this._isAllowedMediaDevices) {
+        this.startScanner()
+      }
     }
   }
 
@@ -122,6 +134,7 @@ class QOScanner extends HTMLElement {
         this._imgPreview.style.backgroundImage = ''
         this._imgFile.src = ''
       }
+      this._codeReader.reset()
       this.closeResultBlock()
     }
   }
@@ -145,21 +158,27 @@ class QOScanner extends HTMLElement {
     }
   }
 
+  decodeCodeString(text) {
+    const qoData = new QOData(text)
+
+    if (qoData.valid) {
+      this.showResult(qoData)
+      return true
+    } else {
+      this.showMessage({
+        message: 'В коде не найдены параметры заказа.',
+        details: text
+      })
+      return false
+    }
+  }
+
   decodeFromImage(img) {
     this.showMessage({ message: 'Выполняем распознавание кода...' })
     setTimeout(() => {
       if (this.isResultOpened) {
         this._codeReader.decodeFromImage(img).then((result) => {
-          const qoData = new QOData(result.text)
-
-          if (qoData.valid) {
-            this.showResult(qoData)
-          } else {
-            this.showMessage({
-              message: 'В коде не найдены параметры заказа.',
-              details: result.text
-            })
-          }
+          this.decodeCodeString(result.text)
         }).catch((error) => {
           this.showMessage({ error, message: 'Не удалось распознать QR код.' })
         }).then(() => {
@@ -167,6 +186,20 @@ class QOScanner extends HTMLElement {
         })
       }
     }, 10)
+  }
+
+  startScanner() {
+    this._codeReader.decodeFromVideoDevice(null, this._video,
+      (result, error) => {
+        if (result) {
+          this.decodeCodeString(result.text)
+          this._codeReader.reset()
+        } if (error && !(error instanceof ZXing.NotFoundException)) {
+          this.showMessage(error)
+          this._codeReader.reset()
+        }
+      }
+    )
   }
 
   showResult(result) {
