@@ -289,8 +289,11 @@ qo-scanner .qo-scanner__img-from-file {
 
 qo-scanner .qo-scanner__media {
   flex-grow: 1;
+  max-height: 100%;
+  max-width: 100%;
   display: flex;
   justify-content: center;
+  background-color: var(--header-background-color);
 }
 
 qo-scanner .qo-scanner__video {
