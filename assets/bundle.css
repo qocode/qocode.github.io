@@ -287,6 +287,17 @@ qo-scanner .qo-scanner__img-from-file {
   display: none;
 }
 
+qo-scanner .qo-scanner__media {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+qo-scanner .qo-scanner__video {
+  height: 100%;
+  width: 100%;
+}
+
 qo-scanner .qo-scanner__result-content {
   margin: 1rem;
   display: flex;
