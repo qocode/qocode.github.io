@@ -17,6 +17,7 @@
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[css]": {
+    "files.insertFinalNewline": true,
     "editor.defaultFormatter": "michelemelluso.code-beautifier"
   },
   "javascript.validate.enable": false,

@@ -1,0 +1,96 @@
+qo-generator {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem 2rem;
+}
+
+qo-generator .qo-generator__form {
+  display: contents;
+}
+
+qo-generator .qo-generator__form_api {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+qo-generator .qo-generator__form_seller {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+qo-generator .qo-generator__form_name {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+qo-generator .qo-generator__form_price {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+qo-generator .qo-generator__url-field {
+  grid-column: 1 / 3;
+}
+
+qo-generator .qo-generator__qr-canvas-block {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: .5rem;
+}
+
+qo-generator .qo-generator__qr-canvas {
+  border: 1px solid var(--side-border-color);
+  border-radius: 2px;
+  box-sizing: content-box;
+}
+
+qo-generator .qo-generator__qr-canvas-cfg {
+  padding: .1rem .2rem;
+}
+
+qo-generator .qo-generator__qr-canvas-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: .5rem;
+  align-content: start;
+  padding-bottom: .5rem;
+}
+
+qo-generator .qo-generator__qr-canvas-color {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr 5rem;
+  column-gap: 0.5rem;
+  align-items: center;
+}
+
+qo-generator .qo-generator__input-color {
+  padding: 0;
+  border: 1px solid var(--side-border-color);
+  background: none;
+  height: 1.5rem;
+  cursor: pointer;
+}
+
+qo-generator .qo-generator__color-label {
+  text-align: end;
+}
+
+@media screen and (max-device-width: 32rem) {
+  qo-generator {
+    grid-template-columns: 1fr;
+  }
+
+  qo-generator .qo-generator__form_api,
+  qo-generator .qo-generator__form_seller,
+  qo-generator .qo-generator__form_name,
+  qo-generator .qo-generator__form_price,
+  qo-generator .qo-generator__url-field {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  qo-generator .qo-generator__qr-canvas-block {
+    align-items: center;
+  }
+}

@@ -4,14 +4,15 @@ defaults:
     values:
       layout: "default"
 exclude:
-  - .vscode
+  - .vscode/
   - .eslintrc
   - .gitignore
-  - node_modules
+  - build/
+  - node_modules/
+  - src/
   - Gemfile
   - Gemfile.lock
   - LICENSE
   - README.md
   - package.json
-  - package-lock.json
-  - webpack.config.js
+  - rollup.config.js
