@@ -40,10 +40,9 @@
 (() => {
   var location = window.location;
   var compatible = window.$notml.compatible();
-  if (!compatible.success && location.pathname !== '/not-supported/') {
-    location.href = '/not-supported/';
-  } else if (compatible.success &&
-    (location.pathname === '/not-supported/' || location.pathname === '/not-supported')) {
+  if (!compatible.success && location.pathname !== '/not-supported.html') {
+    location.href = '/not-supported.html';
+  } else if (compatible.success && location.pathname === '/not-supported.html') {
     location.href = '/';
   }
   if (location.protocol !== 'https:' &&
