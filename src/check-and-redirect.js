@@ -5,8 +5,11 @@ import '@notml/core/check-compatible'
   var location = window.location
   var compatible = window.$notml.compatible()
 
-  if (!compatible.success) {
+  if (!compatible.success && location.pathname !== '/not-supported/') {
     location.href = '/not-supported/'
+  } else if (compatible.success &&
+    (location.pathname === '/not-supported/' || location.pathname === '/not-supported')) {
+    location.href = '/'
   }
 
   // Перенаправление с http на https
