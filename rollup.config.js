@@ -11,9 +11,16 @@ export default [{
     css({ output: 'assets/bundle.css' })
   ]
 }, {
-  input: 'assets/bundle.js',
+  input: 'build/bundle.js',
   output: { file: 'assets/bundle.js', format: 'esm' },
   plugins: [
+    resolve({ browser: true, preferBuiltins: false })
+  ]
+}, {
+  input: 'src/check-and-redirect.js',
+  output: { file: 'assets/check-and-redirect.js' },
+  plugins: [
+    cleanup({ comments: 'none' }),
     resolve({ browser: true, preferBuiltins: false })
   ]
 }]
