@@ -4,7 +4,7 @@ import css from 'rollup-plugin-css-only'
 
 export default [{
   input: 'src/bundle.js',
-  output: { file: 'assets/bundle.js', format: 'esm' },
+  output: { file: 'build/bundle.js', format: 'esm' },
   external: ['@notml/core', '@qocode/core'],
   plugins: [
     cleanup({ comments: 'none' }),
