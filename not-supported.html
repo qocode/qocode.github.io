@@ -1,3 +1,5 @@
+---
+---
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -7,9 +9,9 @@
   <link rel="icon" type="image/png" href="/assets/png/favicon.png" />
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700|Ubuntu:300,400&display=swap&subset=cyrillic">
-  <link href="/assets/bundle.css" rel="stylesheet">
+  <link href="{{ '/assets/bundle.css?v=' | append: site.github.build_revision }}" rel="stylesheet">
   <link rel="preload" href="/assets/png/favicon.png" as="image">
-  <script src="/assets/check-and-redirect.js"></script>
+  <script src="{{ '/assets/check-and-redirect.js?v=' | append: site.github.build_revision }}"></script>
   <title>Not supported – QO-Code</title>
 </head>
 
