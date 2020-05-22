@@ -10,6 +10,9 @@
     "jsdoc/require-returns": "off"
   },
   "ignorePatterns": [
-    "assets/bundle.js"
+    "_deprecated",
+    "_site",
+    "assets/bundle.js",
+    "assets/check-and-redirect.js"
   ]
 }
