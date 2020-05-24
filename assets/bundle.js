@@ -1143,3 +1143,17 @@ class DefaultLayout extends HTMLElement$4 {
   }
 }
 oom.define(DefaultLayout);
+
+const { navigator: navigator$1 } = window;
+if ('serviceWorker' in navigator$1) {
+  (async () => {
+    const { buildNumber } = window.$qoConfig;
+    const { serviceWorker } = navigator$1;
+    const regSW = await serviceWorker.getRegistration();
+    if (regSW && regSW.active && !regSW.active.scriptURL.endsWith(buildNumber)) {
+      await regSW.unregister('/');
+    }
+    await serviceWorker.register(`/offline.js?v=${buildNumber}`, { scope: '/' });
+    console.log(`serviceWorker succeeded: v=${buildNumber}`);
+  })().catch(console.error);
+}
