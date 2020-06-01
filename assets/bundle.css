@@ -141,7 +141,6 @@ default-layout .footer {
   border-style: solid;
   border-color: var(--side-border-color);
   border-width: 1px 0px 0px 0px;
-  color: var(--footer-text-color);
   font-size: 75%;
 }
 
@@ -149,6 +148,7 @@ default-layout .footer__item {
   display: flex;
   align-items: center;
   padding: 0 1rem;
+  color: var(--footer-text-color);
 }
 
 @media screen and (min-device-width: 64rem) {
@@ -203,27 +203,6 @@ default-layout .header__menu .qo-menu__item:hover .qo-menu__text {
 default-layout .header__menu .qo-menu__item_active .qo-menu__text,
 default-layout .header__menu .qo-menu__item_active:hover .qo-menu__text {
   color: #ffff;
-}
-qo-menu .qo-menu__item {
-  cursor: pointer;
-}
-
-qo-menu .qo-menu__text {
-  border-bottom: 1px dotted #0000;
-}
-
-qo-menu .qo-menu__item:hover {
-  text-decoration: underline;
-}
-
-qo-menu .qo-menu__item_active,
-qo-menu .qo-menu__item_active:hover {
-  text-decoration: none;
-  cursor: default;
-}
-
-qo-menu .qo-menu__item_active .qo-menu__text {
-  border-bottom-color: #9c9c9c;
 }
 qo-scanner {
   position: fixed;
@@ -404,6 +383,27 @@ qo-scan-button .qo-scan-button__image {
   background-size: contain;
   height: 100%;
   width: 100%;
+}
+qo-menu .qo-menu__item {
+  cursor: pointer;
+}
+
+qo-menu .qo-menu__text {
+  border-bottom: 1px dotted #0000;
+}
+
+qo-menu .qo-menu__item:hover {
+  text-decoration: underline;
+}
+
+qo-menu .qo-menu__item_active,
+qo-menu .qo-menu__item_active:hover {
+  text-decoration: none;
+  cursor: default;
+}
+
+qo-menu .qo-menu__item_active .qo-menu__text {
+  border-bottom-color: #9c9c9c;
 }
 .qo-my-orders__layouts {
   height: 100%;

@@ -48,16 +48,18 @@ class DefaultLayout extends HTMLElement {
         content => (this._content = content))
       .footer({ class: 'footer' }, oom()
         .div('QO-Code', { class: 'footer__item' })
-        .oom(QOMenu,
-          {
-            class: 'footer__menu',
-            dataActiveItem: this._activePage,
-            options: {
-              navigate: page => this.navigate(page),
-              dataItems: this._menuItemsBottom
-            }
-          },
-          menu => (this._menuBottom = menu))))
+        // .oom(QOMenu,
+        //   {
+        //     class: 'footer__menu',
+        //     dataActiveItem: this._activePage,
+        //     options: {
+        //       navigate: page => this.navigate(page),
+        //       dataItems: this._menuItemsBottom
+        //     }
+        //   },
+        //   menu => (this._menuBottom = menu))
+        .a('GitHub', { class: 'footer__item', href: 'https://github.com/qocode', target: '_blank' })
+      ))
     .oom(QOScanner, scanner => { this._scanner = scanner })
 
   constructor() {
@@ -85,7 +87,7 @@ class DefaultLayout extends HTMLElement {
         this._activePage = page
         this._activeLayout = this._pages[page].layout
         this._menuTop.dataset.activeItem = page
-        this._menuBottom.dataset.activeItem = page
+        // this._menuBottom.dataset.activeItem = page
         this._content.innerHTML = ''
         this._content.append(this._activeLayout().dom)
         if (!back) {
