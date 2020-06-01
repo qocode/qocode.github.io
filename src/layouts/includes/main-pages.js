@@ -1,11 +1,12 @@
 import { oom } from '@notml/core'
-import { QOGenerator } from '../../components/qo-generator.js'
+import { ListOrders } from '../../components/qo-list-orders.js'
 import { QOScanner, QOScanButton } from '../../components/qo-scanner.js'
+import { QOGenerator } from '../../components/qo-generator.js'
 import './main-pages.css'
 
 
 export const qoMyOrders = () => oom('div', { class: 'qo-my-orders__layouts' })
-  .div({ class: 'qo-my-orders__content' }, '/ - 404 Not Found')
+  .div({ class: 'qo-my-orders__content' }, oom(ListOrders))
   .div({
     class: 'qo-my-orders__scan-button-block',
     onclick: () => QOScanner.emitToggle()

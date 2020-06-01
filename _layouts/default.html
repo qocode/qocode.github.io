@@ -1,18 +1,27 @@
+{% capture build_number %}{{ site.github.build_revision }}{{ site.time | date: '%Y%m%d%H%M%S' }}{% endcapture %}
 <!DOCTYPE html>
 <html lang="ru">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" type="image/png" href="/assets/png/favicon.png" />
+  <meta name="theme-color" content="#2F353B">
+  <link rel="icon" type="image/png" href="/assets/png/favicon64.png" />
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700|Ubuntu:300,400&display=swap&subset=cyrillic">
-  <link href="{{ '/assets/bundle.css?v=' | append: site.github.build_revision }}" rel="stylesheet">
-  <link rel="preload" href="/assets/png/favicon.png" as="image">
-  <script src="{{ '/assets/check-and-redirect.js?v=' | append: site.github.build_revision }}"></script>
-  <script type="module" src="{{ '/assets/bundle.js?v=' | append: site.github.build_revision }}"></script>
-  <title>QO-Code</title>
+  <link href="/assets/bundle.css?v={{ build_number }}" rel="stylesheet">
+  <link rel="preload" href="/assets/png/favicon64.png" as="image">
+  <link rel="manifest" href="/qocode.webmanifest">
+  <script src="/assets/check-and-redirect.js?v={{ build_number }}"></script>
+  <script type="module" src="/assets/bundle.js?v={{ build_number }}"></script>
+  <title>Заказы – QO-Code</title>
 </head>
+
+<script>
+  window.$qoConfig = {
+    buildNumber: '{{ build_number }}'
+  }
+</script>
 
 <body>
   <default-layout />

@@ -9,8 +9,10 @@
     "@notml/core": "../../notml/core/notml-core-0.0.0.tgz",
     "@rollup/plugin-node-resolve": "latest",
     "rollup": "latest",
+    "rollup-plugin-terser": "latest",
     "rollup-plugin-cleanup": "latest",
-    "rollup-plugin-css-only": "latest"
+    "rollup-plugin-css-only": "latest",
+    "dexie": "latest"
   },
   "scripts": {
     "build": "npx rollup --config"
