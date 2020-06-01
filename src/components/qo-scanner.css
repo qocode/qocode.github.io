@@ -173,7 +173,7 @@ qo-scan-button.qo-scan-button_middle {
 }
 
 qo-scan-button .qo-scan-button__image {
-  background-image: url('/assets/png/favicon.png');
+  background-image: url('/assets/png/favicon64.png');
   background-size: contain;
   height: 100%;
   width: 100%;

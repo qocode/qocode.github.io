@@ -13,7 +13,7 @@ self.addEventListener('install', (event) => {
         `./assets/bundle.css?v=${buildNumber}`,
         `./assets/bundle.js?v=${buildNumber}`,
         `./assets/check-and-redirect.js?v=${buildNumber}`,
-        './assets/png/favicon.png',
+        './assets/png/favicon64.png',
         './assets/png/back.png'
       ])
     })

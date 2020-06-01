@@ -1,0 +1,34 @@
+{
+  "name": "QO-Code",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFF",
+  "theme_color": "#2F353B",
+  "description": "Система быстрого оформления заказов",
+  "categories": [
+    "shopping"
+  ],
+  "icons": [
+    {
+      "src": "/assets/png/favicon32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "/assets/png/favicon64.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "/assets/png/favicon128.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "/assets/png/favicon256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    }
+  ]
+}
