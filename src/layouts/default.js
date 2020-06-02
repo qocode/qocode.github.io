@@ -58,7 +58,18 @@ class DefaultLayout extends HTMLElement {
         //     }
         //   },
         //   menu => (this._menuBottom = menu))
-        .a('GitHub', { class: 'footer__item', href: 'https://github.com/qocode', target: '_blank' })
+        .div({ class: 'footer__block' }, oom
+          .a('GitHub', {
+            class: 'footer__item',
+            href: 'https://github.com/qocode/qocode',
+            target: '_blank'
+          })
+          .a('Сообщить о проблеме', {
+            class: 'footer__item',
+            href: 'https://github.com/qocode/qocode/issues',
+            target: '_blank'
+          })
+        )
       ))
     .oom(QOScanner, scanner => { this._scanner = scanner })
 

@@ -50,6 +50,10 @@ p:first-child {
   margin-top: 0;
 }
 
+a {
+  outline: none;
+}
+
 .theme__text-mono {
   font-family: 'Ubuntu Mono', monospace;
 }
@@ -144,6 +148,11 @@ default-layout .footer {
   font-size: 75%;
 }
 
+default-layout .footer__block {
+  display: flex;
+  align-items: center;
+}
+
 default-layout .footer__item {
   display: flex;
   align-items: center;
@@ -203,6 +212,27 @@ default-layout .header__menu .qo-menu__item:hover .qo-menu__text {
 default-layout .header__menu .qo-menu__item_active .qo-menu__text,
 default-layout .header__menu .qo-menu__item_active:hover .qo-menu__text {
   color: #ffff;
+}
+qo-menu .qo-menu__item {
+  cursor: pointer;
+}
+
+qo-menu .qo-menu__text {
+  border-bottom: 1px dotted #0000;
+}
+
+qo-menu .qo-menu__item:hover {
+  text-decoration: underline;
+}
+
+qo-menu .qo-menu__item_active,
+qo-menu .qo-menu__item_active:hover {
+  text-decoration: none;
+  cursor: default;
+}
+
+qo-menu .qo-menu__item_active .qo-menu__text {
+  border-bottom-color: #9c9c9c;
 }
 qo-scanner {
   position: fixed;
@@ -383,27 +413,6 @@ qo-scan-button .qo-scan-button__image {
   background-size: contain;
   height: 100%;
   width: 100%;
-}
-qo-menu .qo-menu__item {
-  cursor: pointer;
-}
-
-qo-menu .qo-menu__text {
-  border-bottom: 1px dotted #0000;
-}
-
-qo-menu .qo-menu__item:hover {
-  text-decoration: underline;
-}
-
-qo-menu .qo-menu__item_active,
-qo-menu .qo-menu__item_active:hover {
-  text-decoration: none;
-  cursor: default;
-}
-
-qo-menu .qo-menu__item_active .qo-menu__text {
-  border-bottom-color: #9c9c9c;
 }
 .qo-my-orders__layouts {
   height: 100%;

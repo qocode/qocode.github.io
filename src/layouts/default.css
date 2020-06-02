@@ -78,6 +78,11 @@ default-layout .footer {
   font-size: 75%;
 }
 
+default-layout .footer__block {
+  display: flex;
+  align-items: center;
+}
+
 default-layout .footer__item {
   display: flex;
   align-items: center;

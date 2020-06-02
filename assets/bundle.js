@@ -1099,7 +1099,18 @@ class DefaultLayout extends HTMLElement$4 {
         content => (this._content = content))
       .footer({ class: 'footer' }, oom()
         .div('QO-Code', { class: 'footer__item' })
-        .a('GitHub', { class: 'footer__item', href: 'https://github.com/qocode', target: '_blank' })
+        .div({ class: 'footer__block' }, oom
+          .a('GitHub', {
+            class: 'footer__item',
+            href: 'https://github.com/qocode/qocode',
+            target: '_blank'
+          })
+          .a('Сообщить о проблеме', {
+            class: 'footer__item',
+            href: 'https://github.com/qocode/qocode/issues',
+            target: '_blank'
+          })
+        )
       ))
     .oom(QOScanner, scanner => { this._scanner = scanner; })
   constructor() {
