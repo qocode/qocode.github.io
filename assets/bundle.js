@@ -932,13 +932,15 @@ class QOGenerator extends HTMLElement$3 {
       light: '#ffffff',
       opacity: {
         dark: 255,
-        light: 0
+        light: 255
       }
     };
   }
   set qrScale(value) {
     this.setAttribute('qr-scale', value);
-    return value
+  }
+  get qrScale() {
+    return this.getAttribute('qr-scale')
   }
   qrScaleChanged(oldValue, newValue) {
     if (oldValue !== newValue) {
@@ -1064,12 +1066,12 @@ const qoAbout = () => oom
   .div('/about/ - 404 Not Found');
 
 const { HTMLElement: HTMLElement$4, document: document$2, location: location$2, history } = window;
-const basicTitle = 'QO-Code';
+const basicTitle = 'Quick Order';
 class DefaultLayout extends HTMLElement$4 {
   _homePage = '/'
   _pages = {
-    '/': { title: 'Заказы', layout: qoMyOrders },
-    '/get-qr/': { title: 'QR', layout: qoGetQR },
+    '/': { title: 'Мои заказы', layout: qoMyOrders },
+    '/get-qr/': { title: 'Создать QR', layout: qoGetQR },
     '/partners/': { title: 'Партнеры', layout: qoPartners },
     '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }
@@ -1098,13 +1100,17 @@ class DefaultLayout extends HTMLElement$4 {
         this._activeLayout(),
         content => (this._content = content))
       .footer({ class: 'footer' }, oom()
-        .div('QO-Code', { class: 'footer__item' })
         .div({ class: 'footer__block' }, oom
-          .a('GitHub', {
-            class: 'footer__item',
-            href: 'https://github.com/qocode/qocode',
-            target: '_blank'
-          })
+          .span({ class: 'footer__item' }, oom
+            .span('🄯').pre(' ')
+            .a('QO-Code', {
+              class: 'footer__text',
+              href: 'https://github.com/qocode/qocode',
+              target: '_blank'
+            })
+          )
+        )
+        .div({ class: 'footer__block' }, oom
           .a('Сообщить о проблеме', {
             class: 'footer__item',
             href: 'https://github.com/qocode/qocode/issues',
@@ -1118,7 +1124,11 @@ class DefaultLayout extends HTMLElement$4 {
     this.onpopstate = () => this.navigate(location$2.pathname, true);
   }
   connectedCallback() {
-    document$2.title = `${this._pages[this._activePage].title} – ${basicTitle}`;
+    if (location$2.pathname === '/') {
+      document$2.title = basicTitle;
+    } else {
+      document$2.title = `${this._pages[location$2.pathname].title} – ${basicTitle}`;
+    }
     window.addEventListener('popstate', this.onpopstate);
   }
   disconnectedCallback() {
@@ -1131,7 +1141,11 @@ class DefaultLayout extends HTMLElement$4 {
         this._scanner.close();
         history.pushState(null, '', this._activePage);
       } else {
-        document$2.title = `${this._pages[page].title} – ${basicTitle}`;
+        if (page === '/') {
+          document$2.title = basicTitle;
+        } else {
+          document$2.title = `${this._pages[page].title} – ${basicTitle}`;
+        }
         this._activePage = page;
         this._activeLayout = this._pages[page].layout;
         this._menuTop.dataset.activeItem = page;

@@ -148,15 +148,17 @@ class QOGenerator extends HTMLElement {
       light: '#ffffff',
       opacity: {
         dark: 255,
-        light: 0
+        light: 255
       }
     }
   }
 
   set qrScale(value) {
     this.setAttribute('qr-scale', value)
+  }
 
-    return value
+  get qrScale() {
+    return this.getAttribute('qr-scale')
   }
 
   qrScaleChanged(oldValue, newValue) {

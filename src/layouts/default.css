@@ -90,6 +90,10 @@ default-layout .footer__item {
   color: var(--footer-text-color);
 }
 
+default-layout .footer__text {
+  color: var(--footer-text-color);
+}
+
 @media screen and (min-device-width: 64rem) {
   default-layout {
     grid-template-columns: 1fr minmax(min-content, 58rem) 1fr;

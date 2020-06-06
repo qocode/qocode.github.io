@@ -5,15 +5,15 @@ import { QOMenu } from '../components/qo-menu.js'
 import { qoMyOrders, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
 
 const { HTMLElement, document, location, history } = window
-const basicTitle = 'QO-Code'
+const basicTitle = 'Quick Order'
 
 class DefaultLayout extends HTMLElement {
 
   _homePage = '/'
 
   _pages = {
-    '/': { title: 'Заказы', layout: qoMyOrders },
-    '/get-qr/': { title: 'QR', layout: qoGetQR },
+    '/': { title: 'Мои заказы', layout: qoMyOrders },
+    '/get-qr/': { title: 'Создать QR', layout: qoGetQR },
     '/partners/': { title: 'Партнеры', layout: qoPartners },
     '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }
@@ -47,7 +47,16 @@ class DefaultLayout extends HTMLElement {
         this._activeLayout(),
         content => (this._content = content))
       .footer({ class: 'footer' }, oom()
-        .div('QO-Code', { class: 'footer__item' })
+        .div({ class: 'footer__block' }, oom
+          .span({ class: 'footer__item' }, oom
+            .span('🄯').pre(' ')
+            .a('QO-Code', {
+              class: 'footer__text',
+              href: 'https://github.com/qocode/qocode',
+              target: '_blank'
+            })
+          )
+        )
         // .oom(QOMenu,
         //   {
         //     class: 'footer__menu',
@@ -59,11 +68,6 @@ class DefaultLayout extends HTMLElement {
         //   },
         //   menu => (this._menuBottom = menu))
         .div({ class: 'footer__block' }, oom
-          .a('GitHub', {
-            class: 'footer__item',
-            href: 'https://github.com/qocode/qocode',
-            target: '_blank'
-          })
           .a('Сообщить о проблеме', {
             class: 'footer__item',
             href: 'https://github.com/qocode/qocode/issues',
@@ -79,7 +83,11 @@ class DefaultLayout extends HTMLElement {
   }
 
   connectedCallback() {
-    document.title = `${this._pages[this._activePage].title} – ${basicTitle}`
+    if (location.pathname === '/') {
+      document.title = basicTitle
+    } else {
+      document.title = `${this._pages[location.pathname].title} – ${basicTitle}`
+    }
     window.addEventListener('popstate', this.onpopstate)
   }
 
@@ -94,7 +102,11 @@ class DefaultLayout extends HTMLElement {
         this._scanner.close()
         history.pushState(null, '', this._activePage)
       } else {
-        document.title = `${this._pages[page].title} – ${basicTitle}`
+        if (page === '/') {
+          document.title = basicTitle
+        } else {
+          document.title = `${this._pages[page].title} – ${basicTitle}`
+        }
         this._activePage = page
         this._activeLayout = this._pages[page].layout
         this._menuTop.dataset.activeItem = page
