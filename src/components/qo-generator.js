@@ -241,7 +241,7 @@ class QOGenerator extends HTMLElement {
     name = name ? name + '_' : ''
     price = price ? price + '_' : ''
 
-    return `qocode_${name}${price}${new Date().toJSON().slice(0, -5)}.png`
+    return `quick-order-code_${name}${price}${new Date().toJSON().slice(0, -5)}.png`
   }
 
   /** Отрисовка QR кода по данным формы */

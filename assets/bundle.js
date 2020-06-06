@@ -1010,7 +1010,7 @@ class QOGenerator extends HTMLElement$3 {
     name = name || qoData.raw.seller;
     name = name ? name + '_' : '';
     price = price ? price + '_' : '';
-    return `qocode_${name}${price}${new Date().toJSON().slice(0, -5)}.png`
+    return `quick-order-code_${name}${price}${new Date().toJSON().slice(0, -5)}.png`
   }
   drawQR(adapt = true) {
     const qoData = new QOData(this._form);
