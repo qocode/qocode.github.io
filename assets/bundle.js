@@ -924,7 +924,7 @@ class QOGenerator extends HTMLElement$3 {
       errorCorrectionLevel: 'medium',
       color: {
         dark: '#000000ff',
-        light: '#ffffff00'
+        light: '#ffffffff'
       }
     };
     this._colorOptions = {
