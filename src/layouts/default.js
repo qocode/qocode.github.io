@@ -49,12 +49,13 @@ class DefaultLayout extends HTMLElement {
       .footer({ class: 'footer' }, oom()
         .div({ class: 'footer__block' }, oom
           .span({ class: 'footer__item' }, oom
-            .span('🄯').pre(' ')
+            .span('«')
             .a('QO-Code', {
               class: 'footer__text',
               href: 'https://github.com/qocode/qocode',
               target: '_blank'
             })
+            .span('»')
           )
         )
         // .oom(QOMenu,
