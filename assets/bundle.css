@@ -397,6 +397,27 @@ qo-scan-button .qo-scan-button__image {
   height: 100%;
   width: 100%;
 }
+qo-menu .qo-menu__item {
+  cursor: pointer;
+}
+
+qo-menu .qo-menu__text {
+  border-bottom: 1px dotted #0000;
+}
+
+qo-menu .qo-menu__item:hover {
+  text-decoration: underline;
+}
+
+qo-menu .qo-menu__item_active,
+qo-menu .qo-menu__item_active:hover {
+  text-decoration: none;
+  cursor: default;
+}
+
+qo-menu .qo-menu__item_active .qo-menu__text {
+  border-bottom-color: #9c9c9c;
+}
 qo-scanner-v2 {
   position: fixed;
   top: 0;
@@ -470,7 +491,7 @@ qo-scanner-v2 .qo-scanner__hide-block {
 }
 
 qo-scanner-v2 .qo-scanner__transparent-block {
-  opacity: .3;
+  opacity: .5;
 }
 
 qo-scanner-v2 .qo-scanner__not-media {
@@ -599,27 +620,6 @@ qo-scan-button-v2 .qo-scan-button__image {
   background-size: contain;
   height: 100%;
   width: 100%;
-}
-qo-menu .qo-menu__item {
-  cursor: pointer;
-}
-
-qo-menu .qo-menu__text {
-  border-bottom: 1px dotted #0000;
-}
-
-qo-menu .qo-menu__item:hover {
-  text-decoration: underline;
-}
-
-qo-menu .qo-menu__item_active,
-qo-menu .qo-menu__item_active:hover {
-  text-decoration: none;
-  cursor: default;
-}
-
-qo-menu .qo-menu__item_active .qo-menu__text {
-  border-bottom-color: #9c9c9c;
 }
 .qo-my-orders__layouts {
   height: 100%;
