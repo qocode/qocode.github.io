@@ -177,7 +177,7 @@ qo-scanner .qo-scanner__back-button:hover {
   }
 }
 
-qo-scan-button-v2 {
+qo-scan-button {
   display: block;
   cursor: pointer;
   height: 2rem;
@@ -185,17 +185,17 @@ qo-scan-button-v2 {
   border-radius: .5rem;
 }
 
-qo-scan-button-v2:hover {
+qo-scan-button:hover {
   background-color: #2196f31a;
 }
 
-qo-scan-button-v2.qo-scan-button_middle {
+qo-scan-button.qo-scan-button_middle {
   height: 3rem;
   width: 3rem;
   border-radius: 1rem;
 }
 
-qo-scan-button-v2 .qo-scan-button__image {
+qo-scan-button .qo-scan-button__image {
   background-image: url('/assets/png/favicon64.png');
   background-size: contain;
   height: 100%;

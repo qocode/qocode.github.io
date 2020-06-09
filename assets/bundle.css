@@ -238,6 +238,37 @@ qo-menu .qo-menu__item_active:hover {
 qo-menu .qo-menu__item_active .qo-menu__text {
   border-bottom-color: #9c9c9c;
 }
+.qo-my-orders__layouts {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.qo-my-orders__content {
+  flex-grow: 1;
+}
+
+.qo-my-orders__scan-button-block {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: .5rem;
+  border: 1px solid var(--side-border-color);
+  border-radius: .5rem;
+}
+
+.qo-my-orders__scan-button-block:hover {
+  background-color: #2196f31a;
+}
+
+.qo-my-orders__scan-button-block qo-scan-button:hover {
+  background: none;
+}
+
+.qo-my-orders__scan-button {
+  margin: 0 .7rem;
+}
 qo-scanner {
   position: fixed;
   top: 0;
@@ -417,7 +448,7 @@ qo-scanner .qo-scanner__back-button:hover {
   }
 }
 
-qo-scan-button-v2 {
+qo-scan-button {
   display: block;
   cursor: pointer;
   height: 2rem;
@@ -425,52 +456,21 @@ qo-scan-button-v2 {
   border-radius: .5rem;
 }
 
-qo-scan-button-v2:hover {
+qo-scan-button:hover {
   background-color: #2196f31a;
 }
 
-qo-scan-button-v2.qo-scan-button_middle {
+qo-scan-button.qo-scan-button_middle {
   height: 3rem;
   width: 3rem;
   border-radius: 1rem;
 }
 
-qo-scan-button-v2 .qo-scan-button__image {
+qo-scan-button .qo-scan-button__image {
   background-image: url('/assets/png/favicon64.png');
   background-size: contain;
   height: 100%;
   width: 100%;
-}
-.qo-my-orders__layouts {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.qo-my-orders__content {
-  flex-grow: 1;
-}
-
-.qo-my-orders__scan-button-block {
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: .5rem;
-  border: 1px solid var(--side-border-color);
-  border-radius: .5rem;
-}
-
-.qo-my-orders__scan-button-block:hover {
-  background-color: #2196f31a;
-}
-
-.qo-my-orders__scan-button-block qo-scan-button:hover {
-  background: none;
-}
-
-.qo-my-orders__scan-button {
-  margin: 0 .7rem;
 }
 qo-generator {
   display: grid;

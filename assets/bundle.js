@@ -711,7 +711,7 @@ class QOScanner extends HTMLElement$2 {
   }
 }
 class QOScanButton extends HTMLElement$2 {
-  static tagName = 'qo-scan-button-v2'
+  static tagName = 'qo-scan-button'
   static template = ({ attributes }) => oom.div({ class: 'qo-scan-button__image' })
   constructor({ navigate }) {
     super();
