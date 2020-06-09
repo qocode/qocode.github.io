@@ -755,19 +755,23 @@ class QOScannerV2 extends HTMLElement$1$1 {
   static tagName = 'qo-scanner-v2'
   static template = ({ element, navigate }) => oom
     .section({ class: 'qo-scanner__content' }, content => { element._content = content; })
-    .section({ class: 'qo-scanner__result qo-scanner_hide-block' },
+    .section({ class: 'qo-scanner__result qo-scanner__hide-block' },
       oom
         .div({ class: 'qo-scanner__result-content' }, result => { element._result = result; }),
       resultBlock => { element._resultBlock = resultBlock; })
-    .div({ class: 'qo-scanner__header-container' }, oom
-      .aside({ class: 'qo-scanner__logo' }, oom(QOScanButtonV2, { options: { navigate } }))
-      .header({ class: 'qo-scanner__header' }))
-    .footer({ class: 'qo-scanner__footer' }, oom
-      .div({
-        class: 'qo-scanner__back-button-block',
-        onclick: () => element.back()
-      }, oom
-        .div({ class: 'qo-scanner__back-button' })))
+    .div({ class: 'qo-scanner__header-container' },
+      oom
+        .aside({ class: 'qo-scanner__logo' }, oom(QOScanButtonV2, { options: { navigate } }))
+        .header({ class: 'qo-scanner__header' }),
+      headerContainer => { element._headerContainer = headerContainer; })
+    .footer({ class: 'qo-scanner__footer' },
+      oom
+        .div({
+          class: 'qo-scanner__back-button-block',
+          onclick: () => element.back()
+        }, oom
+          .div({ class: 'qo-scanner__back-button' })),
+      footer => { element._footer = footer; })
   static tmplNotMedia = ({ element }) => oom('div', { class: 'qo-scanner__not-media' })
     .div(oom
       .p('К сожалению на Вашем устройстве не доступен захват видео с камеры.')
@@ -817,6 +821,10 @@ class QOScannerV2 extends HTMLElement$1$1 {
       }
     }
   }
+  toggleTransparent() {
+    this._headerContainer.classList.toggle('qo-scanner__transparent-block');
+    this._footer.classList.toggle('qo-scanner__transparent-block');
+  }
   loadFromFile(file) {
     if (file) {
       this.showMessage({ message: 'Выполняем загрузку файла...' });
@@ -849,14 +857,17 @@ class QOScannerV2 extends HTMLElement$1$1 {
     }, 10);
   }
   startScanner() {
+    this.toggleTransparent();
     this._codeReader.decodeFromVideoDevice(null, this._video,
       (result, error) => {
         if (result) {
           this.decodeCodeString(result.text);
           this._codeReader.reset();
+          this.toggleTransparent();
         } if (error && !(error instanceof to.NotFoundException)) {
           this.showMessage(error);
           this._codeReader.reset();
+          this.toggleTransparent();
         }
       }
     );
@@ -897,13 +908,13 @@ class QOScannerV2 extends HTMLElement$1$1 {
   }
   openResultBlock() {
     this.isResultOpened = true;
-    this._resultBlock.classList.remove('qo-scanner_hide-block');
-    this._content.classList.add('qo-scanner_hide-block');
+    this._resultBlock.classList.remove('qo-scanner__hide-block');
+    this._content.classList.add('qo-scanner__hide-block');
   }
   closeResultBlock() {
     this.isResultOpened = false;
-    this._content.classList.remove('qo-scanner_hide-block');
-    this._resultBlock.classList.add('qo-scanner_hide-block');
+    this._content.classList.remove('qo-scanner__hide-block');
+    this._resultBlock.classList.add('qo-scanner__hide-block');
     this._result.innerHTML = '';
   }
   back() {

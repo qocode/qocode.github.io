@@ -66,10 +66,13 @@ qo-scanner-v2 .qo-scanner__content::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-thumb-color);
 }
 
-qo-scanner-v2 .qo-scanner_hide-block {
+qo-scanner-v2 .qo-scanner__hide-block {
   display: none;
 }
 
+qo-scanner-v2 .qo-scanner__transparent-block {
+  opacity: .3;
+}
 
 qo-scanner-v2 .qo-scanner__not-media {
   margin: 1rem;
