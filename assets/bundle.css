@@ -311,10 +311,17 @@ qo-scanner .qo-scanner__content {
   left: 0;
   right: 0;
   grid-column: 1 / 4;
-  background-color: var(--content-background-color);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+}
+
+qo-scanner .qo-scanner__content {
+  background-color: var(--header-background-color);
+}
+
+qo-scanner .qo-scanner__result {
+  background-color: var(--content-background-color);
 }
 
 qo-scanner .qo-scanner__content--video {
@@ -346,10 +353,11 @@ qo-scanner .qo-scanner__transparent-block {
 }
 
 qo-scanner .qo-scanner__not-media {
-  margin: 1rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  background-color: var(--content-background-color);
 }
 
 qo-scanner .qo-scanner__img-from-file-preview {
