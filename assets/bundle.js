@@ -784,6 +784,10 @@ class QOScannerV2 extends HTMLElement$1$1 {
       }, input => { element._imgInput = input; }))
     .div({ class: 'qo-scanner__img-from-file-preview' }, div => { element._imgPreview = div; })
     .img({ class: 'qo-scanner__img-from-file' }, img => { element._imgFile = img; })
+  static tmplMedia = ({ element }) => oom('div', { class: 'qo-scanner__media' })
+    .video({
+      class: 'qo-scanner__video'
+    }, video => { element._video = video; })
   isResultOpened = false
   _isAllowedMediaDevices = null
   _codeReader = new to.BrowserMultiFormatReader()
@@ -805,6 +809,7 @@ class QOScannerV2 extends HTMLElement$1$1 {
         .catch(error => { console.error(error.message); });
       if (devices && devices.length > 0) {
         this._isAllowedMediaDevices = true;
+        this._content.classList.add('qo-scanner__content--video');
         this._content.append(QOScannerV2.tmplMedia({ element: this }).dom);
         this.startScanner();
       } else {
