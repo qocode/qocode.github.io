@@ -6,6 +6,7 @@ self.addEventListener('install', (event) => {
     caches.open(buildNumber).then((cache) => {
       return cache.addAll([
         './',
+        '/scanner/',
         './get-qr/',
         './contacts/',
         './partners/',
