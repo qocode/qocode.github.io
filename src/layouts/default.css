@@ -6,7 +6,7 @@ default-layout {
   background-color: var(--side-background-color);
 }
 
-default-layout .logo {
+default-layout .default-layout__logo {
   display: flex;
   align-items: center;
   justify-content: flex-end;

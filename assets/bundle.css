@@ -76,7 +76,7 @@ default-layout {
   background-color: var(--side-background-color);
 }
 
-default-layout .logo {
+default-layout .default-layout__logo {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -234,7 +234,7 @@ qo-scanner.qo-scanner_opened {
   grid-template-rows: 3rem 1fr 3rem;
 }
 
-default-layout .qo-scanner__logo {
+qo-scanner .qo-scanner__logo {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -392,6 +392,181 @@ qo-scan-button.qo-scan-button_middle {
 }
 
 qo-scan-button .qo-scan-button__image {
+  background-image: url('/assets/png/favicon64.png');
+  background-size: contain;
+  height: 100%;
+  width: 100%;
+}
+qo-scanner-v2 {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--side-background-color);
+  min-width: 22rem;
+}
+
+qo-scanner-v2 .qo-scanner__header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rem;
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  grid-template-rows: 3rem;
+}
+
+qo-scanner-v2 .qo-scanner__logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: var(--header-background-color);
+  padding-right: .5rem;
+}
+
+qo-scanner-v2 .qo-scanner__header {
+  grid-column: 2 / 4;
+  background-color: var(--header-background-color);
+}
+
+qo-scanner-v2 .qo-scanner__result,
+qo-scanner-v2 .qo-scanner__content {
+  position: fixed;
+  top: 3rem;
+  bottom: 3rem;
+  left: 0;
+  right: 0;
+  grid-column: 1 / 4;
+  background-color: var(--content-background-color);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+
+qo-scanner-v2 .qo-scanner__result::-webkit-scrollbar-track,
+qo-scanner-v2 .qo-scanner__content::-webkit-scrollbar-track {
+  background-color: var(--content-background-color);
+}
+
+qo-scanner-v2 .qo-scanner__result::-webkit-scrollbar,
+qo-scanner-v2 .qo-scanner__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+qo-scanner-v2 .qo-scanner__result::-webkit-scrollbar-thumb,
+qo-scanner-v2 .qo-scanner__content::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+}
+
+qo-scanner-v2 .qo-scanner_hide-block {
+  display: none;
+}
+
+
+qo-scanner-v2 .qo-scanner__not-media {
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+qo-scanner-v2 .qo-scanner__img-from-file-preview {
+  flex-grow: 1;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  margin-top: .5rem;
+  min-height: 6rem;
+  display: none;
+}
+
+qo-scanner-v2 .qo-scanner__img-from-file-preview_selected {
+  display: block;
+}
+
+qo-scanner-v2 .qo-scanner__img-from-file {
+  display: none;
+}
+
+qo-scanner-v2 .qo-scanner__footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3rem;
+  grid-column: 1 / 4;
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  background-color: var(--header-background-color);
+}
+
+qo-scanner-v2 .qo-scanner__back-button-block {
+  grid-column: 2 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+qo-scanner-v2 .qo-scanner__back-button {
+  cursor: pointer;
+  height: 2rem;
+  width: 2rem;
+  background: url('/assets/png/back.png') no-repeat center;
+  border-radius: .5rem;
+  margin-right: .5rem;
+}
+
+qo-scanner-v2 .qo-scanner__back-button:hover {
+  background-color: #fff1;
+}
+
+@media screen and (min-device-width: 64rem) {
+  qo-scanner-v2 .qo-scanner__header-container {
+    grid-template-columns: 1fr minmax(min-content, 58rem) 1fr;
+  }
+
+  qo-scanner-v2 .qo-scanner__footer {
+    grid-template-columns: 1fr minmax(min-content, 58rem) 1fr;
+  }
+}
+
+@media screen and (max-device-width: 32rem) {
+  qo-scanner-v2 .qo-scanner__back-button-block {
+    grid-column: 1 / 4;
+    cursor: pointer;
+  }
+
+  qo-scanner-v2 .qo-scanner__back-button-block:hover {
+    background-color: #fff1;
+  }
+
+  qo-scanner-v2 .qo-scanner__back-button:hover {
+    background-color: #fff0;
+  }
+}
+
+qo-scan-button-v2 {
+  display: block;
+  cursor: pointer;
+  height: 2rem;
+  width: 2rem;
+  border-radius: .5rem;
+}
+
+qo-scan-button-v2:hover {
+  background-color: #2196f31a;
+}
+
+qo-scan-button-v2.qo-scan-button_middle {
+  height: 3rem;
+  width: 3rem;
+  border-radius: 1rem;
+}
+
+qo-scan-button-v2 .qo-scan-button__image {
   background-image: url('/assets/png/favicon64.png');
   background-size: contain;
   height: 100%;

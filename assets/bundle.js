@@ -124,7 +124,7 @@ class OOMElement extends OOMAbstract {
           attrName = attrName.replace(/[A-Z]/g, str => `-${str.toLowerCase()}`);
         }
         attrValue = instance.getAttribute(attrName);
-        if (attrValue.startsWith('json::')) {
+        if (attrValue && attrValue.startsWith('json::')) {
           attrValue = JSON.parse(attrValue.replace('json::', ''));
         }
       }
@@ -750,8 +750,190 @@ class QOScanButton extends HTMLElement$2 {
 oom.define(QOScanner);
 oom.define(QOScanButton);
 
-const { HTMLElement: HTMLElement$1$1 } = window;
-class QOMenu extends HTMLElement$1$1 {
+const { HTMLElement: HTMLElement$1$1, FileReader: FileReader$1, location: location$2 } = window;
+class QOScannerV2 extends HTMLElement$1$1 {
+  static tagName = 'qo-scanner-v2'
+  static template = ({ element, navigate }) => oom
+    .section({ class: 'qo-scanner__content' }, content => { element._content = content; })
+    .section({ class: 'qo-scanner__result qo-scanner_hide-block' },
+      oom
+        .div({ class: 'qo-scanner__result-content' }, result => { element._result = result; }),
+      resultBlock => { element._resultBlock = resultBlock; })
+    .div({ class: 'qo-scanner__header-container' }, oom
+      .aside({ class: 'qo-scanner__logo' }, oom(QOScanButtonV2, { options: { navigate } }))
+      .header({ class: 'qo-scanner__header' }))
+    .footer({ class: 'qo-scanner__footer' }, oom
+      .div({
+        class: 'qo-scanner__back-button-block',
+        onclick: () => element.back()
+      }, oom
+        .div({ class: 'qo-scanner__back-button' })))
+  static tmplNotMedia = ({ element }) => oom('div', { class: 'qo-scanner__not-media' })
+    .div(oom
+      .p('К сожалению на Вашем устройстве не доступен захват видео с камеры.')
+      .p({ class: 'theme__additional-text' },
+        'Для оформления заказа, Вы можете воспользоваться' +
+        ' стандартными приложениями камеры или сканера QR-кодов,' +
+        ' и перейти на страницу заказа по ссылке в коде.')
+      .p({ class: 'theme__additional-text' },
+        'Или выбрать фотографию с QR кодом из галереи.')
+      .input({
+        type: 'file',
+        accept: 'image/*',
+        onchange: event => element.loadFromFile(event.srcElement.files[0])
+      }, input => { element._imgInput = input; }))
+    .div({ class: 'qo-scanner__img-from-file-preview' }, div => { element._imgPreview = div; })
+    .img({ class: 'qo-scanner__img-from-file' }, img => { element._imgFile = img; })
+  isResultOpened = false
+  _isAllowedMediaDevices = null
+  _codeReader = new to.BrowserMultiFormatReader()
+  constructor({ navigate }) {
+    super();
+    this._navigate = navigate || (() => console.error('Not implemented'));
+  }
+  connectedCallback() {
+    this.resolveMediaDevices()
+      .catch(error => { console.error(error.message); });
+  }
+  disconnectedCallback() {
+    this._codeReader.reset();
+  }
+  async resolveMediaDevices() {
+    if (this._isAllowedMediaDevices === null) {
+      this._isAllowedMediaDevices = false;
+      const devices = await this._codeReader.getVideoInputDevices()
+        .catch(error => { console.error(error.message); });
+      if (devices && devices.length > 0) {
+        this._isAllowedMediaDevices = true;
+        this._content.append(QOScannerV2.tmplMedia({ element: this }).dom);
+        this.startScanner();
+      } else {
+        this._content.append(QOScannerV2.tmplNotMedia({ element: this }).dom);
+      }
+    }
+  }
+  loadFromFile(file) {
+    if (file) {
+      this.showMessage({ message: 'Выполняем загрузку файла...' });
+      setTimeout(() => {
+        if (this.isResultOpened) {
+          const reader = new FileReader$1();
+          reader.readAsDataURL(file);
+          reader.onload = event => {
+            this._imgPreview.classList.add('qo-scanner__img-from-file-preview_selected');
+            this._imgPreview.style.backgroundImage = `url('${event.srcElement.result}')`;
+            this._imgFile.src = event.srcElement.result;
+            this.decodeFromImage(this._imgFile);
+          };
+        }
+      }, 10);
+    }
+  }
+  decodeFromImage(img) {
+    this.showMessage({ message: 'Выполняем распознавание кода...' });
+    setTimeout(() => {
+      if (this.isResultOpened) {
+        this._codeReader.decodeFromImage(img).then((result) => {
+          this.decodeCodeString(result.text);
+        }).catch((error) => {
+          this.showMessage({ error, message: 'Не удалось распознать QR код.' });
+        }).then(() => {
+          this._codeReader.reset();
+        });
+      }
+    }, 10);
+  }
+  startScanner() {
+    this._codeReader.decodeFromVideoDevice(null, this._video,
+      (result, error) => {
+        if (result) {
+          this.decodeCodeString(result.text);
+          this._codeReader.reset();
+        } if (error && !(error instanceof to.NotFoundException)) {
+          this.showMessage(error);
+          this._codeReader.reset();
+        }
+      }
+    );
+  }
+  decodeCodeString(text) {
+    const qoData = new QOData(text);
+    if (qoData.valid) {
+      this.showResult(qoData);
+      return true
+    } else {
+      this.showMessage({
+        message: 'В коде не найдены параметры заказа.',
+        details: text
+      });
+      return false
+    }
+  }
+  showResult(result) {
+    this._result.innerHTML = JSON.stringify(result, null, '  ');
+    this.openResultBlock();
+    console.log(result);
+  }
+  showMessage({ error, message, details }) {
+    const tmpl = oom('div');
+    if (message) {
+      tmpl.p(message);
+    }
+    if (error) {
+      tmpl.p({ class: 'theme__additional-text' }, error.message || error);
+      console.error(error);
+    }
+    if (details) {
+      tmpl.p({ class: 'theme__additional-text' }, details);
+    }
+    this._result.innerHTML = '';
+    this._result.append(tmpl.dom);
+    this.openResultBlock();
+  }
+  openResultBlock() {
+    this.isResultOpened = true;
+    this._resultBlock.classList.remove('qo-scanner_hide-block');
+    this._content.classList.add('qo-scanner_hide-block');
+  }
+  closeResultBlock() {
+    this.isResultOpened = false;
+    this._content.classList.remove('qo-scanner_hide-block');
+    this._resultBlock.classList.add('qo-scanner_hide-block');
+    this._result.innerHTML = '';
+  }
+  back() {
+    if (this.isResultOpened) {
+      this.closeResultBlock();
+      if (this._isAllowedMediaDevices) {
+        this.startScanner();
+      }
+    } else {
+      this._navigate('/');
+    }
+  }
+}
+class QOScanButtonV2 extends HTMLElement$1$1 {
+  static tagName = 'qo-scan-button-v2'
+  static template = ({ attributes }) => oom.div({ class: 'qo-scan-button__image' })
+  constructor({ navigate }) {
+    super();
+    this._navigate = navigate || (() => console.error('Not implemented'));
+    this.onclick = event => this.openScanner(event);
+  }
+  openScanner(event) {
+    event.stopPropagation();
+    if (location$2.pathname === '/scanner/') {
+      this._navigate('/');
+    } else {
+      this._navigate('/scanner/');
+    }
+  }
+}
+oom.define(QOScannerV2);
+oom.define(QOScanButtonV2);
+
+const { HTMLElement: HTMLElement$2$1 } = window;
+class QOMenu extends HTMLElement$2$1 {
   static tagName = 'qo-menu'
   _items = {}
   constructor({ navigate }) {
@@ -782,9 +964,9 @@ class QOMenu extends HTMLElement$1$1 {
 }
 oom.define(QOMenu);
 
-const { HTMLElement: HTMLElement$2$1 } = window;
+const { HTMLElement: HTMLElement$3 } = window;
 const db = new kt$2('qo-list-orders');
-class ListOrders extends HTMLElement$2$1 {
+class ListOrders extends HTMLElement$3 {
   static tagName = 'qo-list-orders'
 }
 db.version(1).stores({
@@ -793,8 +975,8 @@ db.version(1).stores({
 });
 oom.define(ListOrders);
 
-const { HTMLElement: HTMLElement$3 } = window;
-class QOGenerator extends HTMLElement$3 {
+const { HTMLElement: HTMLElement$4 } = window;
+class QOGenerator extends HTMLElement$4 {
   static tagName = 'qo-generator'
   template = ({ attributes }) => oom
     .form({ class: 'qo-generator__form' }, (oom
@@ -1052,6 +1234,7 @@ const qoMyOrders = () => oom('div', { class: 'qo-my-orders__layouts' })
     .div('Открыть', { class: 'theme__additional-text' })
     .oom(QOScanButton, { class: 'qo-scan-button_middle qo-my-orders__scan-button' })
     .div('сканнер ', { class: 'theme__additional-text' }));
+const qoScanner = ({ navigate }) => oom(QOScannerV2, { options: { navigate } });
 const qoGetQR = () => oom
   .p('Укажите параметры оформления заказа.')
   .p({ class: 'theme__additional-text' },
@@ -1065,12 +1248,13 @@ const qoContacts = () => oom
 const qoAbout = () => oom
   .div('/about/ - 404 Not Found');
 
-const { HTMLElement: HTMLElement$4, document: document$2, location: location$2, history } = window;
+const { HTMLElement: HTMLElement$5, document: document$2, location: location$1$1, history } = window;
 const basicTitle = 'Quick Order';
-class DefaultLayout extends HTMLElement$4 {
+class DefaultLayout extends HTMLElement$5 {
   _homePage = '/'
   _pages = {
     '/': { title: 'Мои заказы', layout: qoMyOrders },
+    '/scanner/': { title: 'Сканер', layout: qoScanner },
     '/get-qr/': { title: 'Создать QR', layout: qoGetQR },
     '/partners/': { title: 'Партнеры', layout: qoPartners },
     '/contacts/': { title: 'Контакты', layout: qoContacts },
@@ -1080,10 +1264,14 @@ class DefaultLayout extends HTMLElement$4 {
     .map(page => ({ page, text: this._pages[page].title }))
   _menuItemsBottom = ['/partners/', '/contacts/', '/about/']
     .map(page => ({ page, text: this._pages[page].title }))
-  _activePage = location$2.pathname
+  _activePage = location$1$1.pathname
   _activeLayout = this._pages[this._activePage].layout
   template = () => oom
-    .aside({ class: 'logo' }, oom(QOScanButton))
+    .aside({ class: 'default-layout__logo' }, oom(QOScanButtonV2, {
+      options: {
+        navigate: page => this.navigate(page)
+      }
+    }))
     .header({ class: 'header' }, oom()
       .oom(QOMenu,
         {
@@ -1097,7 +1285,9 @@ class DefaultLayout extends HTMLElement$4 {
         menu => (this._menuTop = menu)))
     .div({ class: 'middle' }, oom
       .section({ class: 'content' },
-        this._activeLayout(),
+        this._activeLayout({
+          navigate: page => this.navigate(page)
+        }),
         content => (this._content = content))
       .footer({ class: 'footer' }, oom()
         .div({ class: 'footer__block' }, oom
@@ -1119,16 +1309,16 @@ class DefaultLayout extends HTMLElement$4 {
           })
         )
       ))
-    .oom(QOScanner, scanner => { this._scanner = scanner; })
+    .oom(QOScanner)
   constructor() {
     super();
-    this.onpopstate = () => this.navigate(location$2.pathname, true);
+    this.onpopstate = () => this.navigate(location$1$1.pathname, true);
   }
   connectedCallback() {
-    if (location$2.pathname === '/') {
+    if (location$1$1.pathname === '/') {
       document$2.title = basicTitle;
     } else {
-      document$2.title = `${this._pages[location$2.pathname].title} – ${basicTitle}`;
+      document$2.title = `${this._pages[location$1$1.pathname].title} – ${basicTitle}`;
     }
     window.addEventListener('popstate', this.onpopstate);
   }
@@ -1138,23 +1328,20 @@ class DefaultLayout extends HTMLElement$4 {
   }
   navigate(page, back = false) {
     if (this._activePage !== page) {
-      if (this._scanner.isOpened) {
-        this._scanner.close();
-        history.pushState(null, '', this._activePage);
+      if (page === '/') {
+        document$2.title = basicTitle;
       } else {
-        if (page === '/') {
-          document$2.title = basicTitle;
-        } else {
-          document$2.title = `${this._pages[page].title} – ${basicTitle}`;
-        }
-        this._activePage = page;
-        this._activeLayout = this._pages[page].layout;
-        this._menuTop.dataset.activeItem = page;
-        this._content.innerHTML = '';
-        this._content.append(this._activeLayout().dom);
-        if (!back) {
-          history.pushState(null, '', page);
-        }
+        document$2.title = `${this._pages[page].title} – ${basicTitle}`;
+      }
+      this._activePage = page;
+      this._activeLayout = this._pages[page].layout;
+      this._menuTop.dataset.activeItem = page;
+      this._content.innerHTML = '';
+      this._content.append(this._activeLayout({
+        navigate: page => this.navigate(page)
+      }).dom);
+      if (!back) {
+        history.pushState(null, '', page);
       }
     }
   }

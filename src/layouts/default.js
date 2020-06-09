@@ -1,8 +1,9 @@
 import { oom } from '@notml/core'
 import './default.css'
-import { QOScanner, QOScanButton } from '../components/qo-scanner.js'
+import { QOScanner } from '../components/qo-scanner.js'
+import { QOScanButtonV2 } from '../components/qo-scanner-v2.js'
 import { QOMenu } from '../components/qo-menu.js'
-import { qoMyOrders, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
+import { qoMyOrders, qoScanner, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
 
 const { HTMLElement, document, location, history } = window
 const basicTitle = 'Quick Order'
@@ -13,6 +14,7 @@ class DefaultLayout extends HTMLElement {
 
   _pages = {
     '/': { title: 'Мои заказы', layout: qoMyOrders },
+    '/scanner/': { title: 'Сканер', layout: qoScanner },
     '/get-qr/': { title: 'Создать QR', layout: qoGetQR },
     '/partners/': { title: 'Партнеры', layout: qoPartners },
     '/contacts/': { title: 'Контакты', layout: qoContacts },
@@ -30,7 +32,11 @@ class DefaultLayout extends HTMLElement {
   _activeLayout = this._pages[this._activePage].layout
 
   template = () => oom
-    .aside({ class: 'logo' }, oom(QOScanButton))
+    .aside({ class: 'default-layout__logo' }, oom(QOScanButtonV2, {
+      options: {
+        navigate: page => this.navigate(page)
+      }
+    }))
     .header({ class: 'header' }, oom()
       .oom(QOMenu,
         {
@@ -44,7 +50,9 @@ class DefaultLayout extends HTMLElement {
         menu => (this._menuTop = menu)))
     .div({ class: 'middle' }, oom
       .section({ class: 'content' },
-        this._activeLayout(),
+        this._activeLayout({
+          navigate: page => this.navigate(page)
+        }),
         content => (this._content = content))
       .footer({ class: 'footer' }, oom()
         .div({ class: 'footer__block' }, oom
@@ -76,7 +84,7 @@ class DefaultLayout extends HTMLElement {
           })
         )
       ))
-    .oom(QOScanner, scanner => { this._scanner = scanner })
+    .oom(QOScanner)
 
   constructor() {
     super()
@@ -99,24 +107,21 @@ class DefaultLayout extends HTMLElement {
 
   navigate(page, back = false) {
     if (this._activePage !== page) {
-      if (this._scanner.isOpened) {
-        this._scanner.close()
-        history.pushState(null, '', this._activePage)
+      if (page === '/') {
+        document.title = basicTitle
       } else {
-        if (page === '/') {
-          document.title = basicTitle
-        } else {
-          document.title = `${this._pages[page].title} – ${basicTitle}`
-        }
-        this._activePage = page
-        this._activeLayout = this._pages[page].layout
-        this._menuTop.dataset.activeItem = page
-        // this._menuBottom.dataset.activeItem = page
-        this._content.innerHTML = ''
-        this._content.append(this._activeLayout().dom)
-        if (!back) {
-          history.pushState(null, '', page)
-        }
+        document.title = `${this._pages[page].title} – ${basicTitle}`
+      }
+      this._activePage = page
+      this._activeLayout = this._pages[page].layout
+      this._menuTop.dataset.activeItem = page
+      // this._menuBottom.dataset.activeItem = page
+      this._content.innerHTML = ''
+      this._content.append(this._activeLayout({
+        navigate: page => this.navigate(page)
+      }).dom)
+      if (!back) {
+        history.pushState(null, '', page)
       }
     }
   }
