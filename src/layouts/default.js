@@ -1,7 +1,6 @@
 import { oom } from '@notml/core'
 import './default.css'
-import { QOScanner } from '../components/qo-scanner.js'
-import { QOScanButtonV2 } from '../components/qo-scanner-v2.js'
+import { QOScanButton } from '../components/qo-scanner.js'
 import { QOMenu } from '../components/qo-menu.js'
 import { qoMyOrders, qoScanner, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
 
@@ -32,7 +31,7 @@ class DefaultLayout extends HTMLElement {
   _activeLayout = this._pages[this._activePage].layout
 
   template = () => oom
-    .aside({ class: 'default-layout__logo' }, oom(QOScanButtonV2, {
+    .aside({ class: 'default-layout__logo' }, oom(QOScanButton, {
       options: {
         navigate: page => this.navigate(page)
       }
@@ -84,7 +83,6 @@ class DefaultLayout extends HTMLElement {
           })
         )
       ))
-    .oom(QOScanner)
 
   constructor() {
     super()
