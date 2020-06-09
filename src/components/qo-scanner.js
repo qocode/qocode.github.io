@@ -2,33 +2,32 @@ import { QOData, ZXing } from '@qocode/core'
 import { oom } from '@notml/core'
 import './qo-scanner.css'
 
-const { HTMLElement, Event, FileReader } = window
+const { HTMLElement, FileReader, location } = window
 
 
 class QOScanner extends HTMLElement {
 
   static tagName = 'qo-scanner'
 
-  static emitToggle() {
-    const event = new Event('qo-scanner::Toggle')
-
-    window.dispatchEvent(event)
-  }
-
-  static template = ({ element }) => oom
-    .aside({ class: 'qo-scanner__logo' }, oom(QOScanButton))
-    .header({ class: 'qo-scanner__header' })
+  static template = ({ element, navigate }) => oom
     .section({ class: 'qo-scanner__content' }, content => { element._content = content })
-    .section({ class: 'qo-scanner__result qo-scanner_hide-block' },
+    .section({ class: 'qo-scanner__result qo-scanner__hide-block' },
       oom
         .div({ class: 'qo-scanner__result-content' }, result => { element._result = result }),
       resultBlock => { element._resultBlock = resultBlock })
-    .footer({ class: 'qo-scanner__footer' }, oom
-      .div({
-        class: 'qo-scanner__back-button-block',
-        onclick: () => element.back()
-      }, oom
-        .div({ class: 'qo-scanner__back-button' })))
+    .div({ class: 'qo-scanner__header-container' },
+      oom
+        .aside({ class: 'qo-scanner__logo' }, oom(QOScanButton, { options: { navigate } }))
+        .header({ class: 'qo-scanner__header' }),
+      headerContainer => { element._headerContainer = headerContainer })
+    .footer({ class: 'qo-scanner__footer' },
+      oom
+        .div({
+          class: 'qo-scanner__back-button-block',
+          onclick: () => element.back()
+        }, oom
+          .div({ class: 'qo-scanner__back-button' })),
+      footer => { element._footer = footer })
 
   static tmplNotMedia = ({ element }) => oom('div', { class: 'qo-scanner__not-media' })
     .div(oom
@@ -52,25 +51,24 @@ class QOScanner extends HTMLElement {
       class: 'qo-scanner__video'
     }, video => { element._video = video })
 
-  isOpened = false
-
   isResultOpened = false
 
   _isAllowedMediaDevices = null
 
   _codeReader = new ZXing.BrowserMultiFormatReader()
 
-  constructor() {
+  constructor({ navigate }) {
     super()
-    this._eventToggle = () => this.toggle()
+    this._navigate = navigate || (() => console.error('Not implemented'))
   }
 
   connectedCallback() {
-    window.addEventListener('qo-scanner::Toggle', this._eventToggle)
+    this.resolveMediaDevices()
+      .catch(error => { console.error(error.message) })
   }
 
   disconnectedCallback() {
-    window.removeEventListener('qo-scanner::Toggle', this._eventToggle)
+    this._codeReader.reset()
   }
 
   async resolveMediaDevices() {
@@ -81,8 +79,8 @@ class QOScanner extends HTMLElement {
         .catch(error => { console.error(error.message) })
 
       if (devices && devices.length > 0) {
-        console.log(devices)
         this._isAllowedMediaDevices = true
+        this._content.classList.add('qo-scanner__content--video')
         this._content.append(QOScanner.tmplMedia({ element: this }).dom)
         this.startScanner()
       } else {
@@ -91,52 +89,9 @@ class QOScanner extends HTMLElement {
     }
   }
 
-  back() {
-    if (this.isResultOpened) {
-      this.closeResultBlock()
-      if (this._isAllowedMediaDevices) {
-        this.startScanner()
-      }
-    } else {
-      this.toggle()
-    }
-  }
-
-  toggle() {
-    if (this.isOpened) {
-      this.close()
-    } else {
-      this.open()
-    }
-  }
-
-  open() {
-    this.resolveMediaDevices().then(() => this._open())
-  }
-
-  _open() {
-    if (!this.isOpened) {
-      this.isOpened = true
-      this.classList.add('qo-scanner_opened')
-      if (this._isAllowedMediaDevices) {
-        this.startScanner()
-      }
-    }
-  }
-
-  close() {
-    if (this.isOpened) {
-      this.isOpened = false
-      this.classList.remove('qo-scanner_opened')
-      if (this._imgInput) {
-        this._imgInput.value = ''
-        this._imgPreview.classList.remove('qo-scanner__img-from-file-preview_selected')
-        this._imgPreview.style.backgroundImage = ''
-        this._imgFile.src = ''
-      }
-      this._codeReader.reset()
-      this.closeResultBlock()
-    }
+  toggleTransparent() {
+    this._headerContainer.classList.toggle('qo-scanner__transparent-block')
+    this._footer.classList.toggle('qo-scanner__transparent-block')
   }
 
   loadFromFile(file) {
@@ -158,21 +113,6 @@ class QOScanner extends HTMLElement {
     }
   }
 
-  decodeCodeString(text) {
-    const qoData = new QOData(text)
-
-    if (qoData.valid) {
-      this.showResult(qoData)
-      return true
-    } else {
-      this.showMessage({
-        message: 'В коде не найдены параметры заказа.',
-        details: text
-      })
-      return false
-    }
-  }
-
   decodeFromImage(img) {
     this.showMessage({ message: 'Выполняем распознавание кода...' })
     setTimeout(() => {
@@ -189,17 +129,37 @@ class QOScanner extends HTMLElement {
   }
 
   startScanner() {
+    this.toggleTransparent()
     this._codeReader.decodeFromVideoDevice(null, this._video,
       (result, error) => {
         if (result) {
           this.decodeCodeString(result.text)
           this._codeReader.reset()
+          this.toggleTransparent()
         } if (error && !(error instanceof ZXing.NotFoundException)) {
           this.showMessage(error)
           this._codeReader.reset()
+          this.toggleTransparent()
         }
       }
     )
+  }
+
+  decodeCodeString(text) {
+    const qoData = new QOData(text)
+
+    if (qoData.valid) {
+      this.showResult(qoData)
+
+      return true
+    } else {
+      this.showMessage({
+        message: 'В коде не найдены параметры заказа.',
+        details: text
+      })
+
+      return false
+    }
   }
 
   showResult(result) {
@@ -229,15 +189,26 @@ class QOScanner extends HTMLElement {
 
   openResultBlock() {
     this.isResultOpened = true
-    this._resultBlock.classList.remove('qo-scanner_hide-block')
-    this._content.classList.add('qo-scanner_hide-block')
+    this._resultBlock.classList.remove('qo-scanner__hide-block')
+    this._content.classList.add('qo-scanner__hide-block')
   }
 
   closeResultBlock() {
     this.isResultOpened = false
-    this._content.classList.remove('qo-scanner_hide-block')
-    this._resultBlock.classList.add('qo-scanner_hide-block')
+    this._content.classList.remove('qo-scanner__hide-block')
+    this._resultBlock.classList.add('qo-scanner__hide-block')
     this._result.innerHTML = ''
+  }
+
+  back() {
+    if (this.isResultOpened) {
+      this.closeResultBlock()
+      if (this._isAllowedMediaDevices) {
+        this.startScanner()
+      }
+    } else {
+      this._navigate('/')
+    }
   }
 
 }
@@ -247,16 +218,21 @@ class QOScanButton extends HTMLElement {
 
   static tagName = 'qo-scan-button'
 
-  static template = oom.div({ class: 'qo-scan-button__image' })
+  static template = ({ attributes }) => oom.div({ class: 'qo-scan-button__image' })
 
-  constructor() {
+  constructor({ navigate }) {
     super()
+    this._navigate = navigate || (() => console.error('Not implemented'))
     this.onclick = event => this.openScanner(event)
   }
 
   openScanner(event) {
     event.stopPropagation()
-    QOScanner.emitToggle()
+    if (location.pathname === '/scanner/') {
+      this._navigate('/')
+    } else {
+      this._navigate('/scanner/')
+    }
   }
 
 }
@@ -264,6 +240,7 @@ class QOScanButton extends HTMLElement {
 
 oom.define(QOScanner)
 oom.define(QOScanButton)
+
 
 export {
   QOScanner,

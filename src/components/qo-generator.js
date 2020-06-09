@@ -140,7 +140,7 @@ class QOGenerator extends HTMLElement {
       errorCorrectionLevel: 'medium',
       color: {
         dark: '#000000ff',
-        light: '#ffffff00'
+        light: '#ffffffff'
       }
     }
     this._colorOptions = {
@@ -148,15 +148,17 @@ class QOGenerator extends HTMLElement {
       light: '#ffffff',
       opacity: {
         dark: 255,
-        light: 0
+        light: 255
       }
     }
   }
 
   set qrScale(value) {
     this.setAttribute('qr-scale', value)
+  }
 
-    return value
+  get qrScale() {
+    return this.getAttribute('qr-scale')
   }
 
   qrScaleChanged(oldValue, newValue) {
@@ -239,7 +241,7 @@ class QOGenerator extends HTMLElement {
     name = name ? name + '_' : ''
     price = price ? price + '_' : ''
 
-    return `qocode_${name}${price}${new Date().toJSON().slice(0, -5)}.png`
+    return `quick-order-code_${name}${price}${new Date().toJSON().slice(0, -5)}.png`
   }
 
   /** Отрисовка QR кода по данным формы */

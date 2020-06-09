@@ -1,19 +1,20 @@
 import { oom } from '@notml/core'
 import './default.css'
-import { QOScanner, QOScanButton } from '../components/qo-scanner.js'
+import { QOScanButton } from '../components/qo-scanner.js'
 import { QOMenu } from '../components/qo-menu.js'
-import { qoMyOrders, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
+import { qoMyOrders, qoScanner, qoPartners, qoGetQR, qoContacts, qoAbout } from './includes/main-pages.js'
 
 const { HTMLElement, document, location, history } = window
-const basicTitle = 'QO-Code'
+const basicTitle = 'Quick Order'
 
 class DefaultLayout extends HTMLElement {
 
   _homePage = '/'
 
   _pages = {
-    '/': { title: 'Заказы', layout: qoMyOrders },
-    '/get-qr/': { title: 'QR', layout: qoGetQR },
+    '/': { title: 'Мои заказы', layout: qoMyOrders },
+    '/scanner/': { title: 'Сканер', layout: qoScanner },
+    '/get-qr/': { title: 'Создать QR', layout: qoGetQR },
     '/partners/': { title: 'Партнеры', layout: qoPartners },
     '/contacts/': { title: 'Контакты', layout: qoContacts },
     '/about/': { title: 'О проекте', layout: qoAbout }
@@ -30,7 +31,11 @@ class DefaultLayout extends HTMLElement {
   _activeLayout = this._pages[this._activePage].layout
 
   template = () => oom
-    .aside({ class: 'logo' }, oom(QOScanButton))
+    .aside({ class: 'default-layout__logo' }, oom(QOScanButton, {
+      options: {
+        navigate: page => this.navigate(page)
+      }
+    }))
     .header({ class: 'header' }, oom()
       .oom(QOMenu,
         {
@@ -44,10 +49,22 @@ class DefaultLayout extends HTMLElement {
         menu => (this._menuTop = menu)))
     .div({ class: 'middle' }, oom
       .section({ class: 'content' },
-        this._activeLayout(),
+        this._activeLayout({
+          navigate: page => this.navigate(page)
+        }),
         content => (this._content = content))
       .footer({ class: 'footer' }, oom()
-        .div('QO-Code', { class: 'footer__item' })
+        .div({ class: 'footer__block' }, oom
+          .span({ class: 'footer__item' }, oom
+            .span('«')
+            .a('QO-Code', {
+              class: 'footer__text',
+              href: 'https://github.com/qocode/qocode',
+              target: '_blank'
+            })
+            .span('»')
+          )
+        )
         // .oom(QOMenu,
         //   {
         //     class: 'footer__menu',
@@ -58,9 +75,14 @@ class DefaultLayout extends HTMLElement {
         //     }
         //   },
         //   menu => (this._menuBottom = menu))
-        .a('GitHub', { class: 'footer__item', href: 'https://github.com/qocode', target: '_blank' })
+        .div({ class: 'footer__block' }, oom
+          .a('Сообщить о проблеме', {
+            class: 'footer__item',
+            href: 'https://github.com/qocode/qocode/issues',
+            target: '_blank'
+          })
+        )
       ))
-    .oom(QOScanner, scanner => { this._scanner = scanner })
 
   constructor() {
     super()
@@ -68,7 +90,11 @@ class DefaultLayout extends HTMLElement {
   }
 
   connectedCallback() {
-    document.title = `${this._pages[this._activePage].title} – ${basicTitle}`
+    if (location.pathname === '/') {
+      document.title = basicTitle
+    } else {
+      document.title = `${this._pages[location.pathname].title} – ${basicTitle}`
+    }
     window.addEventListener('popstate', this.onpopstate)
   }
 
@@ -79,20 +105,21 @@ class DefaultLayout extends HTMLElement {
 
   navigate(page, back = false) {
     if (this._activePage !== page) {
-      if (this._scanner.isOpened) {
-        this._scanner.close()
-        history.pushState(null, '', this._activePage)
+      if (page === '/') {
+        document.title = basicTitle
       } else {
         document.title = `${this._pages[page].title} – ${basicTitle}`
-        this._activePage = page
-        this._activeLayout = this._pages[page].layout
-        this._menuTop.dataset.activeItem = page
-        // this._menuBottom.dataset.activeItem = page
-        this._content.innerHTML = ''
-        this._content.append(this._activeLayout().dom)
-        if (!back) {
-          history.pushState(null, '', page)
-        }
+      }
+      this._activePage = page
+      this._activeLayout = this._pages[page].layout
+      this._menuTop.dataset.activeItem = page
+      // this._menuBottom.dataset.activeItem = page
+      this._content.innerHTML = ''
+      this._content.append(this._activeLayout({
+        navigate: page => this.navigate(page)
+      }).dom)
+      if (!back) {
+        history.pushState(null, '', page)
       }
     }
   }

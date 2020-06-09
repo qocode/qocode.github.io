@@ -50,6 +50,10 @@ p:first-child {
   margin-top: 0;
 }
 
+a {
+  outline: none;
+}
+
 .theme__text-mono {
   font-family: 'Ubuntu Mono', monospace;
 }

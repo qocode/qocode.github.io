@@ -6,7 +6,7 @@ default-layout {
   background-color: var(--side-background-color);
 }
 
-default-layout .logo {
+default-layout .default-layout__logo {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -78,10 +78,19 @@ default-layout .footer {
   font-size: 75%;
 }
 
+default-layout .footer__block {
+  display: flex;
+  align-items: center;
+}
+
 default-layout .footer__item {
   display: flex;
   align-items: center;
   padding: 0 1rem;
+  color: var(--footer-text-color);
+}
+
+default-layout .footer__text {
   color: var(--footer-text-color);
 }
 

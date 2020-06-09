@@ -5,15 +5,19 @@ import { QOGenerator } from '../../components/qo-generator.js'
 import './main-pages.css'
 
 
-export const qoMyOrders = () => oom('div', { class: 'qo-my-orders__layouts' })
+export const qoMyOrders = ({ navigate }) => oom('div', { class: 'qo-my-orders__layouts' })
   .div({ class: 'qo-my-orders__content' }, oom(ListOrders))
   .div({
     class: 'qo-my-orders__scan-button-block',
-    onclick: () => QOScanner.emitToggle()
+    onclick: () => navigate('/scanner/')
   }, oom
     .div('Открыть', { class: 'theme__additional-text' })
-    .oom(QOScanButton, { class: 'qo-scan-button_middle qo-my-orders__scan-button' })
+    .oom(QOScanButton, {
+      class: 'qo-scan-button_middle qo-my-orders__scan-button',
+      options: { navigate }
+    })
     .div('сканнер ', { class: 'theme__additional-text' }))
+export const qoScanner = ({ navigate }) => oom(QOScanner, { options: { navigate } })
 export const qoGetQR = () => oom
   .p('Укажите параметры оформления заказа.')
   .p({ class: 'theme__additional-text' },
