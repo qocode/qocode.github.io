@@ -2,7 +2,7 @@ import { QOData, ZXing } from '@qocode/core'
 import { oom } from '@notml/core'
 import './qo-scanner.css'
 
-const { HTMLElement, FileReader, location } = window
+const { HTMLElement, FileReader, location, $qoConfig } = window
 
 
 class QOScanner extends HTMLElement {
@@ -53,7 +53,7 @@ class QOScanner extends HTMLElement {
 
   isResultOpened = false
 
-  _isAllowedMediaDevices = null
+  _isAllowedMediaDevices = $qoConfig.isAllowedMediaDevices
 
   _codeReader = new ZXing.BrowserMultiFormatReader()
 
@@ -63,8 +63,12 @@ class QOScanner extends HTMLElement {
   }
 
   connectedCallback() {
-    this.resolveMediaDevices()
-      .catch(error => { console.error(error.message) })
+    if (typeof this._isAllowedMediaDevices === 'boolean') {
+      this.loadContent()
+    } else {
+      this.resolveMediaDevices()
+        .catch(error => { console.error(error.message) })
+    }
   }
 
   disconnectedCallback() {
@@ -72,20 +76,21 @@ class QOScanner extends HTMLElement {
   }
 
   async resolveMediaDevices() {
-    if (this._isAllowedMediaDevices === null) {
-      this._isAllowedMediaDevices = false
+    const devices = await this._codeReader.getVideoInputDevices()
+      .catch(error => { console.error(error.message) })
 
-      const devices = await this._codeReader.getVideoInputDevices()
-        .catch(error => { console.error(error.message) })
+    $qoConfig.isAllowedMediaDevices = this._isAllowedMediaDevices = (devices && devices.length > 0) || false
 
-      if (devices && devices.length > 0) {
-        this._isAllowedMediaDevices = true
-        this._content.classList.add('qo-scanner__content--video')
-        this._content.append(QOScanner.tmplMedia({ element: this }).dom)
-        this.startScanner()
-      } else {
-        this._content.append(QOScanner.tmplNotMedia({ element: this }).dom)
-      }
+    this.loadContent()
+  }
+
+  loadContent() {
+    if (this._isAllowedMediaDevices) {
+      this._content.classList.add('qo-scanner__content--video')
+      this._content.append(QOScanner.tmplMedia({ element: this }).dom)
+      this.startScanner()
+    } else {
+      this._content.append(QOScanner.tmplNotMedia({ element: this }).dom)
     }
   }
 
