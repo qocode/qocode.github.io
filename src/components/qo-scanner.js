@@ -51,6 +51,8 @@ class QOScanner extends HTMLElement {
       class: 'qo-scanner__video'
     }, video => { element._video = video })
 
+  resizeScannerTimeout = null
+  isScannerOpened = false
   isResultOpened = false
 
   _isAllowedMediaDevices = $qoConfig.isAllowedMediaDevices
@@ -60,6 +62,7 @@ class QOScanner extends HTMLElement {
   constructor({ navigate }) {
     super()
     this._navigate = navigate || (() => console.error('Not implemented'))
+    this._resizeScanner = () => this.resizeScanner()
   }
 
   connectedCallback() {
@@ -69,10 +72,12 @@ class QOScanner extends HTMLElement {
       this.resolveMediaDevices()
         .catch(error => { console.error(error.message) })
     }
+    window.addEventListener('resize', this._resizeScanner)
   }
 
   disconnectedCallback() {
     this._codeReader.reset()
+    window.removeEventListener('resize', this._resizeScanner)
   }
 
   async resolveMediaDevices() {
@@ -94,9 +99,15 @@ class QOScanner extends HTMLElement {
     }
   }
 
-  toggleTransparent() {
-    this._headerContainer.classList.toggle('qo-scanner__transparent-block')
-    this._footer.classList.toggle('qo-scanner__transparent-block')
+  setTransparent(value) {
+    if (value) {
+      this._headerContainer.classList.add('qo-scanner__transparent-block')
+      this._footer.classList.add('qo-scanner__transparent-block')
+    } else {
+      this._headerContainer.classList.remove('qo-scanner__transparent-block')
+      this._footer.classList.remove('qo-scanner__transparent-block')
+    }
+
   }
 
   loadFromFile(file) {
@@ -133,18 +144,44 @@ class QOScanner extends HTMLElement {
     }, 10)
   }
 
+  resizeScanner() {
+    if (this.isScannerOpened && !this.resizeScannerTimeout) {
+      this.resizeScannerTimeout = true
+      setTimeout(() => {
+        if (this.isScannerOpened) {
+          this.startScanner()
+          this.resizeScannerTimeout = null
+        } else {
+          this.resizeScannerTimeout = null
+        }
+      }, 100)
+    }
+  }
+
   startScanner() {
-    this.toggleTransparent()
-    this._codeReader.decodeFromVideoDevice(null, this._video,
+    this.setTransparent(true)
+    this._codeReader.reset()
+    this.isScannerOpened = false
+    this._codeReader.decodeFromConstraints({
+      video: {
+        facingMode: 'environment',
+        width: window.screen.availWidth,
+        height: window.screen.availHeight
+      }
+    }, this._video,
       (result, error) => {
         if (result) {
+          this.isScannerOpened = false
           this.decodeCodeString(result.text)
           this._codeReader.reset()
-          this.toggleTransparent()
+          this.setTransparent(false)
         } if (error && !(error instanceof ZXing.NotFoundException)) {
+          this.isScannerOpened = false
           this.showMessage(error)
           this._codeReader.reset()
-          this.toggleTransparent()
+          this.setTransparent(false)
+        } else {
+          this.isScannerOpened = true
         }
       }
     )
