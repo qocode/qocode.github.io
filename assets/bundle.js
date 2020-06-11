@@ -658,10 +658,8 @@ class QOScanner extends HTMLElement$2 {
       setTimeout(() => {
         if (this.isScannerOpened) {
           this.startScanner();
-          this.resizeScannerTimeout = null;
-        } else {
-          this.resizeScannerTimeout = null;
         }
+        this.resizeScannerTimeout = null;
       }, 100);
     }
   }
@@ -671,9 +669,7 @@ class QOScanner extends HTMLElement$2 {
     this.isScannerOpened = false;
     this._codeReader.decodeFromConstraints({
       video: {
-        facingMode: 'environment',
-        width: window.screen.availWidth,
-        height: window.screen.availHeight
+        facingMode: 'environment'
       }
     }, this._video,
       (result, error) => {

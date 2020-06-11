@@ -162,9 +162,7 @@ class QOScanner extends HTMLElement {
     this.isScannerOpened = false
     this._codeReader.decodeFromConstraints({
       video: {
-        facingMode: 'environment',
-        width: window.screen.availWidth,
-        height: window.screen.availHeight
+        facingMode: 'environment'
       }
     }, this._video,
       (result, error) => {
