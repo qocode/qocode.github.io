@@ -2,7 +2,7 @@ import { QOData, ZXing } from '@qocode/core'
 import { oom } from '@notml/core'
 import './qo-scanner.css'
 
-const { HTMLElement, FileReader, location } = window
+const { HTMLElement, FileReader, location, $qoConfig } = window
 
 
 class QOScanner extends HTMLElement {
@@ -51,47 +51,63 @@ class QOScanner extends HTMLElement {
       class: 'qo-scanner__video'
     }, video => { element._video = video })
 
+  resizeScannerTimeout = null
+  isScannerOpened = false
   isResultOpened = false
 
-  _isAllowedMediaDevices = null
+  _isAllowedMediaDevices = $qoConfig.isAllowedMediaDevices
 
   _codeReader = new ZXing.BrowserMultiFormatReader()
 
   constructor({ navigate }) {
     super()
     this._navigate = navigate || (() => console.error('Not implemented'))
+    this._resizeScanner = () => this.resizeScanner()
   }
 
   connectedCallback() {
-    this.resolveMediaDevices()
-      .catch(error => { console.error(error.message) })
+    if (typeof this._isAllowedMediaDevices === 'boolean') {
+      this.loadContent()
+    } else {
+      this.resolveMediaDevices()
+        .catch(error => { console.error(error.message) })
+    }
+    window.addEventListener('resize', this._resizeScanner)
   }
 
   disconnectedCallback() {
     this._codeReader.reset()
+    window.removeEventListener('resize', this._resizeScanner)
   }
 
   async resolveMediaDevices() {
-    if (this._isAllowedMediaDevices === null) {
-      this._isAllowedMediaDevices = false
+    const devices = await this._codeReader.getVideoInputDevices()
+      .catch(error => { console.error(error.message) })
 
-      const devices = await this._codeReader.getVideoInputDevices()
-        .catch(error => { console.error(error.message) })
+    $qoConfig.isAllowedMediaDevices = this._isAllowedMediaDevices = (devices && devices.length > 0) || false
 
-      if (devices && devices.length > 0) {
-        this._isAllowedMediaDevices = true
-        this._content.classList.add('qo-scanner__content--video')
-        this._content.append(QOScanner.tmplMedia({ element: this }).dom)
-        this.startScanner()
-      } else {
-        this._content.append(QOScanner.tmplNotMedia({ element: this }).dom)
-      }
+    this.loadContent()
+  }
+
+  loadContent() {
+    if (this._isAllowedMediaDevices) {
+      this._content.classList.add('qo-scanner__content--video')
+      this._content.append(QOScanner.tmplMedia({ element: this }).dom)
+      this.startScanner()
+    } else {
+      this._content.append(QOScanner.tmplNotMedia({ element: this }).dom)
     }
   }
 
-  toggleTransparent() {
-    this._headerContainer.classList.toggle('qo-scanner__transparent-block')
-    this._footer.classList.toggle('qo-scanner__transparent-block')
+  setTransparent(value) {
+    if (value) {
+      this._headerContainer.classList.add('qo-scanner__transparent-block')
+      this._footer.classList.add('qo-scanner__transparent-block')
+    } else {
+      this._headerContainer.classList.remove('qo-scanner__transparent-block')
+      this._footer.classList.remove('qo-scanner__transparent-block')
+    }
+
   }
 
   loadFromFile(file) {
@@ -128,18 +144,42 @@ class QOScanner extends HTMLElement {
     }, 10)
   }
 
+  resizeScanner() {
+    if (this.isScannerOpened && !this.resizeScannerTimeout) {
+      this.resizeScannerTimeout = true
+      setTimeout(() => {
+        if (this.isScannerOpened) {
+          this.startScanner()
+        }
+        this.resizeScannerTimeout = null
+      }, 100)
+    }
+  }
+
   startScanner() {
-    this.toggleTransparent()
-    this._codeReader.decodeFromVideoDevice(null, this._video,
+    this.setTransparent(true)
+    this._codeReader.reset()
+    this.isScannerOpened = false
+    this._codeReader.decodeFromConstraints({
+      video: {
+        facingMode: 'environment',
+        width: window.screen.availWidth,
+        height: window.screen.availHeight
+      }
+    }, this._video,
       (result, error) => {
         if (result) {
+          this.isScannerOpened = false
           this.decodeCodeString(result.text)
           this._codeReader.reset()
-          this.toggleTransparent()
+          this.setTransparent(false)
         } if (error && !(error instanceof ZXing.NotFoundException)) {
+          this.isScannerOpened = false
           this.showMessage(error)
           this._codeReader.reset()
-          this.toggleTransparent()
+          this.setTransparent(false)
+        } else {
+          this.isScannerOpened = true
         }
       }
     )
