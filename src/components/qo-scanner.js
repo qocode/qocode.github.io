@@ -150,10 +150,8 @@ class QOScanner extends HTMLElement {
       setTimeout(() => {
         if (this.isScannerOpened) {
           this.startScanner()
-          this.resizeScannerTimeout = null
-        } else {
-          this.resizeScannerTimeout = null
         }
+        this.resizeScannerTimeout = null
       }, 100)
     }
   }
