@@ -3,7 +3,7 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#FFF",
+  "background_color": "#2F353B",
   "theme_color": "#2F353B",
   "description": "Система быстрого оформления заказов",
   "categories": [
